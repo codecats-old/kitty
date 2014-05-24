@@ -1,0 +1,30 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}
+
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{% static 'frontsite/icon.jpeg' %}" />
+    </head>
+    <body>
+        {% block header %}
+
+        {% endblock %}
+<section>
+        {% block body %}
+            {% block content %}{% endblock %}
+        {% endblock %}
+</section>
+{% block footer %}
+<footer>
+
+</footer>
+{% endblock %}
+        {% block javascripts %}
+
+        {% endblock %}
+    </body>
+</html>
