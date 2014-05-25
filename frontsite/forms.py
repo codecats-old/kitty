@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
+from frontsite.models import UserProfile
 
 
 class UserForm(forms.ModelForm):
@@ -31,6 +32,9 @@ class UserForm(forms.ModelForm):
         user.set_password(user.password)
         if commit is True:
             user.save()
+            user_profile = UserProfile()
+            user_profile.user = user
+            user_profile.save()
         return user
 
 class LoginForm(forms.ModelForm):

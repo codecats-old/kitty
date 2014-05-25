@@ -1,3 +1,5 @@
+from django.contrib import auth
 from django.db import models
 
-# Create your models here.
+class UserProfile(models.Model):
+    user = models.OneToOneField(auth.models.User)
