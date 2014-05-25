@@ -6,12 +6,13 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View, FormView
-from frontsite.decorators import anonymous_required
+from frontsite.decorators import anonymous_required, login_required
 from frontsite.forms import UserForm, LoginForm
 
 
 class Index(View):
     template_name = 'frontsite/index.html'
+    @method_decorator(login_required)
     def get(self, request):
         print '>>>',request.user.is_authenticated()
         if request.user.is_authenticated() is False:
@@ -29,7 +30,6 @@ class Login(FormView):
     template_name = 'frontsite/login.html'
     form_class = LoginForm
     success_url = reverse_lazy('frontsite:index')
-    @method_decorator(anonymous_required)
     def form_valid(self, form):
         auth.login(self.request, form.user)
         return super(Login, self).form_valid(form)
@@ -42,7 +42,6 @@ class Registration(FormView):
     template_name = 'frontsite/registration.html'
     form_class = UserForm
     success_url = reverse_lazy('frontsite:index')
-    @method_decorator(anonymous_required)
     def form_valid(self, form):
         form.save()
         return super(Registration, self).form_valid(form)
