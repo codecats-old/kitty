@@ -48,7 +48,12 @@
                         </div>
                     </form>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">Login</a></li>
+                        {% if request.user.is_authenticated == False %}
+                        <li><a href="{% url 'frontsite:login' %}">Login</a></li>
+                        <li><a href="{% url 'frontsite:registration' %}">Registration</a></li>
+                        {% else %}
+                        <li><a href="{% url 'frontsite:logout' %}">Logout</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </nav>

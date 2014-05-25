@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.contrib import auth
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django import forms
+from django.db.models import Q
 
 
 class UserForm(forms.ModelForm):
@@ -31,6 +34,7 @@ class UserForm(forms.ModelForm):
         return user
 
 class LoginForm(forms.ModelForm):
+    user = None
     password = forms.CharField(widget=forms.PasswordInput())
     login = forms.CharField(widget=forms.TextInput())
     class Meta:
@@ -39,4 +43,18 @@ class LoginForm(forms.ModelForm):
     def is_valid(self):
         if not super(LoginForm, self).is_valid():
             return False
+        try:
+            user = User.objects.get(
+                Q(username=self.cleaned_data.get('login')) | Q(email=self.cleaned_data.get('login'))
+            )
+        except User.DoesNotExist:
+            self._errors['no_user'] = 'User does not exists'
+            return False
+        if not check_password(self.cleaned_data.get('password'), user.password):
+            self._errors['invalid_password'] = 'Password is invalid'
+            return False
+        if not user.is_active:
+            self._errors['not_active'] = 'User is not active'
+            return False
+        self.user = auth.authenticate(username=user.username, password=self.cleaned_data.get('password'))
         return True
