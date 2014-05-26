@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.contrib import auth
+from django.utils.translation import ugettext as _
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.core import serializers
@@ -21,6 +22,8 @@ class Index(View):
     def get(self, request):
         if request.user.is_authenticated() is False:
             return redirect(reverse('frontsite:login'))
+        from django.utils import translation
+        print translation.get_language()
         return render(request, self.template_name)
 
 class User(View):
@@ -42,9 +45,17 @@ class User(View):
         if request.is_ajax():
             json = serializers.serialize('json', [request.user, user_profile])
             return HttpResponse(json, content_type='application/json')
+        else:
+            pass
 
+class Locale(View):
+    def get(self, request, lang):
+        if self.kwargs['lang'] != None:
+            from django.utils import translation
+            translation.activate(self.kwargs['lang'])
+        return redirect(reverse('frontsite:index'))
 def token(request):
-    return HttpResponse(request.COOKIES.get('csrftoken'))
+    return HttpResponse(_('klucz') + request.COOKIES.get('csrftoken'))
 
 class Logout(View):
     template_name = 'frontsite/logout.html'

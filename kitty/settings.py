@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for kitty project.
 
@@ -47,6 +48,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 )
 
 ROOT_URLCONF = 'kitty.urls'
@@ -76,7 +78,16 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'pl-pl'
+LANGUAGE_CODE = 'en_US'
+
+LANGUAGES = (
+    ('en_US', u'English'),
+    ('pl_PL', u'Polski'),
+)
+
+LOCALE_PATHS = (
+    '/home/s/py/django/kitty/locale',
+)
 
 TIME_ZONE = 'UTC'
 
@@ -104,3 +115,4 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.contrib.messages.context_processors.messages',
 )
+
