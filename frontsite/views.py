@@ -2,6 +2,7 @@
 import json
 from django.contrib import auth
 from django.utils.translation import ugettext as _
+from django.utils import translation
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.core import serializers
@@ -12,19 +13,31 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View, FormView
 from frontsite.decorators import anonymous_required, login_required
-from frontsite.forms import UserForm, LoginForm
-from frontsite.models import UserProfile
-
+from frontsite.forms import UserForm, LoginForm, CategoryForm
+from frontsite import models
 
 class Index(View):
     template_name = 'frontsite/index.html'
     @method_decorator(login_required)
     def get(self, request):
-        if request.user.is_authenticated() is False:
-            return redirect(reverse('frontsite:login'))
-        from django.utils import translation
-        print translation.get_language()
+        print '>>>>', _('klucz')
         return render(request, self.template_name)
+
+class Category(FormView):
+    def post(self, request):
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save()
+            return redirect(reverse('frontsite:category'))
+        return render(request, 'frontsite/category.html', {
+            'form' : form
+        })
+    def get(self, request):
+        categories = models.Category.objects.all()
+        return render(request, 'frontsite/category.html', {
+            'form' : CategoryForm(),
+            'categories': categories
+        })
 
 class User(View):
     @method_decorator(login_required)
@@ -39,7 +52,7 @@ class User(View):
     @method_decorator(login_required)
     def get(self, request):
         try:
-            user_profile = UserProfile.objects.get(user_id=request.user.id)
+            user_profile = models.UserProfile.objects.get(user_id=request.user.id)
         except:
             user_profile = None
         if request.is_ajax():
@@ -51,8 +64,8 @@ class User(View):
 class Locale(View):
     def get(self, request, lang):
         if self.kwargs['lang'] != None:
-            from django.utils import translation
             translation.activate(self.kwargs['lang'])
+            print '>>LOCALE>>', _('klucz')
         return redirect(reverse('frontsite:index'))
 def token(request):
     return HttpResponse(_('klucz') + request.COOKIES.get('csrftoken'))

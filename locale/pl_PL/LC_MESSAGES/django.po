@@ -19,7 +19,7 @@ msgstr ""
 
 #: frontsite/views.py:57
 msgid "klucz"
-msgstr "klócz"
+msgstr "transKlucz"
 
 #: frontsite/templates/layout.html:33
 msgid "Profil"

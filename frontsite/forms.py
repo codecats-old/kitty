@@ -4,8 +4,15 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
-from frontsite.models import UserProfile
+from frontsite.models import UserProfile, Category
 
+
+class CategoryForm(forms.ModelForm):
+    title = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder': u'Tytuł'}), label=u'Tytuł', error_messages={'required': 'Pole wymagane',})
+    description = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control'}), label=u'Opis')
+    class Meta:
+        model = Category
+        fields = ('title', 'description')
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())

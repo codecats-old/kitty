@@ -4,6 +4,7 @@ from django.contrib.auth.views import logout
 
 urlpatterns = patterns('',
    url(r'^$', views.Index.as_view(), name='index'),
+   url(r'^category$', views.Category.as_view(), name='category'),
    url(r'^user$', views.User.as_view(), name='user'),
    url(r'^token$', views.token, name='token'),
    url(r'^locale/(?P<lang>[a-zA-Z_]+)', views.Locale.as_view(), name='locale'),

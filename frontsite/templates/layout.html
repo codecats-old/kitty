@@ -25,13 +25,22 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="#" class="navbar-brand">Brand</a>
+                    <a href="{% url 'frontsite:index' %}" class="navbar-brand active btn">Wierszyki</a>
                 </div>
                 <!-- Collection of nav links, forms, and other content for toggling -->
                 <div id="navbarCollapse" class="collapse navbar-collapse">
+                    {% if request.user.is_authenticated != False %}
                     <ul class="nav navbar-nav">
-                        <li class="active"><a class="btn active" href="{% url 'frontsite:user' %}">{% trans "Profil" %}</a></li>
-                        <li><a class="btn active" href="#">Profile</a></li>
+                        {% url 'frontsite:category' as currentUrl %}
+                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                            <a class="btn" href="{% url 'frontsite:category' %}">Kategorie</a>
+                        </li>
+                        <li><a class="btn" href="#">Użytkownicy</a></li>
+                        <li><a class="btn" href="#">Profil</a></li>
+                        <li><a class="btn" href="#">Najpopularniejsze</a></li>
+                        <li><a class="btn" href="#">Losowe</a></li>
+                        <li><a href="{% url 'frontsite:user' %}">{% trans "Profil" %}</a></li>
+                        {% comment %}
                         <li class="dropdown">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">Messages <b class="caret"></b></a>
                             <ul role="menu" class="dropdown-menu">
@@ -42,13 +51,21 @@
                                 <li><a href="#">Trash</a></li>
                             </ul>
                         </li>
+                        {% endcomment %}
                     </ul>
+                    {% endif %}
                     <ul class="nav navbar-nav navbar-right">
                         {% if request.user.is_authenticated == False %}
-                        <li><a href="{% url 'frontsite:login' %}">Login</a></li>
-                        <li><a href="{% url 'frontsite:registration' %}">Registration</a></li>
+                            {% url 'frontsite:login' as currentUrl %}
+                            <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                                <a href="{% url 'frontsite:login' %}">Login</a>
+                            </li>
+                            {% url 'frontsite:registration' as currentUrl %}
+                            <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                                <a href="{% url 'frontsite:registration' %}">Registration</a>
+                            </li>
                         {% else %}
-                        <li><a href="{% url 'frontsite:logout' %}">Logout {{ request.user.username }}</a></li>
+                            <li><a href="{% url 'frontsite:logout' %}">Logout {{ request.user.username }}</a></li>
                         {% endif %}
                     </ul>
                 </div>

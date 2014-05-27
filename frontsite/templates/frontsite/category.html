@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {% for category in categories %}
+            <div class="col-md-4 well">
+                <h4 class="text-center">{{ category.title }}</h4>
+                <p class="text-primary">
+                    {{ category.description }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-4">
+        <form action="" role="form" method="post">
+            {% for field in form.visible_fields %}
+                <div class="form-group {% if field.errors %}has-error{% endif %}">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <div class="text-warning bg bg-danger">{{ field.errors }}</div>
+                </div>
+            {% endfor %}
+            {% csrf_token %}
+        <input class="btn btn-success col-md-12" type="submit" value="Utwórz" />
+    </div>
+</div>
+{% endblock %}
