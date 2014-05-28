@@ -8,7 +8,7 @@
         {% block stylesheets %}
             <link type="text/css" href="{% static 'frontsite/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
             <link type="text/css" href="{% static 'frontsite/font-awesome-4.1.0/css/font-awesome.min.css' %}" rel="stylesheet" />
-        <link type="text/css" href="{% static 'frontsite/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" />
+            <link type="text/css" href="{% static 'frontsite/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" />
         {% endblock %}
         {% block stylesheets-custom %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{% static 'frontsite/icon.jpeg' %}" />
@@ -29,13 +29,16 @@
                 </div>
                 <!-- Collection of nav links, forms, and other content for toggling -->
                 <div id="navbarCollapse" class="collapse navbar-collapse">
-                    {% if request.user.is_authenticated != False %}
+
                     <ul class="nav navbar-nav">
                         {% url 'frontsite:category' as currentUrl %}
                         <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
                             <a class="btn" href="{% url 'frontsite:category' %}">Kategorie</a>
                         </li>
-                        <li><a class="btn" href="#">Użytkownicy</a></li>
+                        {% url 'frontsite:user' as currentUrl %}
+                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                            <a class="btn" href="{% url 'frontsite:user' %}">Użytkownicy</a>
+                        </li>
                         <li><a class="btn" href="#">Profil</a></li>
                         <li><a class="btn" href="#">Najpopularniejsze</a></li>
                         <li><a class="btn" href="#">Losowe</a></li>
@@ -53,7 +56,6 @@
                         </li>
                         {% endcomment %}
                     </ul>
-                    {% endif %}
                     <ul class="nav navbar-nav navbar-right">
                         {% if request.user.is_authenticated == False %}
                             {% url 'frontsite:login' as currentUrl %}

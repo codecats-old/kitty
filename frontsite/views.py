@@ -24,22 +24,42 @@ class Index(View):
         return render(request, self.template_name)
 
 class Category(FormView):
-    def post(self, request):
-        form = CategoryForm(request.POST)
+    def find_data(self):
+        return models.Category.objects.all().order_by('-id')
+    def find_detail(self):
+        result = None
+        if self.kwargs.has_key('id'):
+            result = models.Category.objects.get(pk=self.kwargs['id'])
+        return result
+    @method_decorator(login_required)
+    def post(self, *args, **kwargs):
+        form = CategoryForm(self.request.POST)
         if form.is_valid():
-            category = form.save()
+            category = form.save(commit=False)
+            if self.kwargs.has_key('id'):
+                category.id = self.kwargs['id']
+            category.save()
             return redirect(reverse('frontsite:category'))
-        return render(request, 'frontsite/category.html', {
-            'form' : form
+        return render(self.request, 'frontsite/category.html', {
+            'form' : form,
+            'category': self.find_detail(),
+            'categories': self.find_data()
         })
-    def get(self, request):
-        categories = models.Category.objects.all()
-        return render(request, 'frontsite/category.html', {
-            'form' : CategoryForm(),
-            'categories': categories
+    def get(self, *args, **kwargs):
+        category = None
+        if self.kwargs.has_key('id'):
+            category = models.Category.objects.get(pk=self.kwargs['id'])
+            if self.kwargs.has_key('delete') and self.kwargs['delete'] == 'delete':
+                category.delete()
+                return redirect(reverse('frontsite:category'))
+        return render(self.request, 'frontsite/category.html', {
+            'form' : CategoryForm(instance=category),
+            'category': self.find_detail(),
+            'categories': self.find_data()
         })
 
 class User(View):
+    template_name = 'frontsite/user.html'
     @method_decorator(login_required)
     def delete(self, request):
         return HttpResponse('[{"delete":1}]', content_type='application/json')
@@ -50,16 +70,11 @@ class User(View):
     def put(self, request):
         return HttpResponse('[{"put":1}]', content_type='application/json')
     @method_decorator(login_required)
-    def get(self, request):
-        try:
-            user_profile = models.UserProfile.objects.get(user_id=request.user.id)
-        except:
-            user_profile = None
-        if request.is_ajax():
-            json = serializers.serialize('json', [request.user, user_profile])
-            return HttpResponse(json, content_type='application/json')
-        else:
-            pass
+    def get(self, *args, **kwargs):
+        profiles = models.UserProfile.objects.all()
+        return render(self.request, self.template_name, {
+            'profiles' : profiles
+        })
 
 class Locale(View):
     def get(self, request, lang):

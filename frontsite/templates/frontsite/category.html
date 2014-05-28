@@ -9,10 +9,15 @@
                 <p class="text-primary">
                     {{ category.description }}
                 </p>
+                {% if request.user.is_authenticated == True %}
+                    <a href="{% url 'frontsite:category_detail' category.id %}" class="btn btn-primary pull-right btn-xs">Edytuj</a>
+                    <a href="{% url 'frontsite:category_detail' id=category.id delete='delete' %}" class="btn btn-primary pull-right btn-xs">Usuń</a>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
     <div class="col-md-4">
+        {% if request.user.is_authenticated == True %}
         <form action="" role="form" method="post">
             {% for field in form.visible_fields %}
                 <div class="form-group {% if field.errors %}has-error{% endif %}">
@@ -22,7 +27,9 @@
                 </div>
             {% endfor %}
             {% csrf_token %}
-        <input class="btn btn-success col-md-12" type="submit" value="Utwórz" />
+            <input class="btn btn-success col-md-12" type="submit" value="Zapisz" />
+        </form>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
