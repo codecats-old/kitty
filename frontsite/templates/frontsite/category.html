@@ -8,7 +8,9 @@
                 <h4 class="text-center">{{ category.title }}</h4>
                 <p class="text-primary">
                     {{ category.description }}
+                    <small class="pull-right">{{ category.created | date:"j E, Y" }}</small>
                 </p>
+                <br />
                 {% if request.user.is_authenticated == True %}
                     <a href="{% url 'frontsite:category_detail' category.id %}" class="btn btn-primary pull-right btn-xs">Edytuj</a>
                     <a href="{% url 'frontsite:category_detail' id=category.id delete='delete' %}" class="btn btn-primary pull-right btn-xs">Usuń</a>

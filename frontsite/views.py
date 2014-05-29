@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.contrib import auth
+from django.db.models import Sum
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.contrib.auth import logout
@@ -71,11 +72,11 @@ class User(View):
         return HttpResponse('[{"put":1}]', content_type='application/json')
     @method_decorator(login_required)
     def get(self, *args, **kwargs):
-        profiles = models.UserProfile.objects.all()
+        # profile = models.UserProfile.objects.annotate(stren=Sum('votes__strength'))
+        users = auth.models.User.objects.all().annotate(vote_strength=Sum('profile__votes__strength'))
         return render(self.request, self.template_name, {
-            'profiles' : profiles
+            'users' : users
         })
-
 class Locale(View):
     def get(self, request, lang):
         if self.kwargs['lang'] != None:
@@ -98,6 +99,10 @@ class Login(FormView):
     success_url = reverse_lazy('frontsite:index')
     def form_valid(self, form):
         auth.login(self.request, form.user)
+        if hasattr(self.request.user, 'profile') == False:
+            self.request.user.profile = models.UserProfile()
+            self.request.user.profile.save()
+            self.request.user.save()
         return super(Login, self).form_valid(form)
     @method_decorator(anonymous_required)
     def get(self, request, *args, **kwargs):
@@ -114,3 +119,12 @@ class Registration(FormView):
     @method_decorator(anonymous_required)
     def get(self, request, *args, **kwargs):
         return self.render_to_response(self.get_context_data(form=self.form_class()))
+def vote(request, profile_id):
+    profile = models.UserProfile.objects.get(pk=profile_id)
+    if profile and hasattr(request.user, 'profile'):
+        vote = models.VoteUserProfile.objects.filter(author__id=request.user.profile.id, user_profile__id=profile.id)
+        if not vote:
+            vote = models.VoteUserProfile()
+            vote.author, vote.user_profile, vote.strength = (request.user.profile, profile, 1)
+            vote.save()
+    return redirect(reverse('frontsite:user'))
