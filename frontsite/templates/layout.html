@@ -33,16 +33,14 @@
                     <ul class="nav navbar-nav">
                         {% url 'frontsite:category' as currentUrl %}
                         <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                            <a class="btn" href="{% url 'frontsite:category' %}">Kategorie</a>
+                            <a class="btn" href="{% url 'frontsite:category' %}">Kategorie <i class="fa fa-sitemap"></i></a>
                         </li>
-                        {% url 'frontsite:user' as currentUrl %}
+                        {% url 'frontsite:all_users' as currentUrl %}
                         <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                            <a class="btn" href="{% url 'frontsite:user' %}">Użytkownicy</a>
+                            <a class="btn" href="{% url 'frontsite:all_users' %}">Użytkownicy <i class="fa fa-users"></i></a>
                         </li>
-                        <li><a class="btn" href="#">Profil</a></li>
-                        <li><a class="btn" href="#">Najpopularniejsze</a></li>
-                        <li><a class="btn" href="#">Losowe</a></li>
-                        <li><a href="{% url 'frontsite:user' %}">{% trans "Profil" %}</a></li>
+                        <li><a class="btn" href="#">Najpopularniejsze <i class="fa fa-slack"></i></a></li>
+                        <li><a class="btn" href="#">Losowe <i class="fa fa-random"></i></a></li>
                         {% comment %}
                         <li class="dropdown">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">Messages <b class="caret"></b></a>
@@ -60,14 +58,15 @@
                         {% if request.user.is_authenticated == False %}
                             {% url 'frontsite:login' as currentUrl %}
                             <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                                <a href="{% url 'frontsite:login' %}">Login</a>
+                                <a href="{% url 'frontsite:login' %}">Login <i class="fa fa-user"></i></a>
                             </li>
                             {% url 'frontsite:registration' as currentUrl %}
                             <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                                <a href="{% url 'frontsite:registration' %}">Registration</a>
+                                <a href="{% url 'frontsite:registration' %}">Registration <i class="fa fa-long-arrow-right"></i></a>
                             </li>
                         {% else %}
-                            <li><a href="{% url 'frontsite:logout' %}">Logout {{ request.user.username }}</a></li>
+                            <li><a href="{% url 'frontsite:user' request.user.id %}">Profil {{ request.user.username }} <i class="fa fa-user"></i></a></li>
+                            <li><a href="{% url 'frontsite:logout' %}">Logout <i class="fa fa-long-arrow-right"></i></a></li>
                         {% endif %}
                     </ul>
                 </div>

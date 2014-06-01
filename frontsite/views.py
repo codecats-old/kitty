@@ -59,29 +59,32 @@ class Category(FormView):
             'categories': self.find_data()
         })
 
-class User(View):
+class User(FormView):
     template_name = 'frontsite/user.html'
-    @method_decorator(login_required)
-    def delete(self, request):
-        return HttpResponse('[{"delete":1}]', content_type='application/json')
     @method_decorator(login_required)
     def post(self, request):
         return HttpResponse('[{"post":1}]', content_type='application/json')
     @method_decorator(login_required)
-    def put(self, request):
-        return HttpResponse('[{"put":1}]', content_type='application/json')
-    @method_decorator(login_required)
     def get(self, *args, **kwargs):
-        # profile = models.UserProfile.objects.annotate(stren=Sum('votes__strength'))
-        users = auth.models.User.objects.all().annotate(vote_strength=Sum('profile__votes__strength'))
+        user = auth.models.User.objects.get(pk=self.kwargs.get('id'))
+        #print user.profile.id
+        votes = None
+        if hasattr(user, 'profile'):
+            votes = models.VoteUserProfile.objects.filter(user_profile=user.profile.id)\
+                .annotate(Sum('strength')).order_by('-date')
+
         return render(self.request, self.template_name, {
-            'users' : users
+            'user': user,
+            'votes': votes
         })
+def get_all_users(request):
+    return render(request, 'frontsite/all_users.html', {
+        'users' : auth.models.User.objects.all().annotate(vote_strength=Sum('profile__votes__strength'))
+    })
 class Locale(View):
     def get(self, request, lang):
         if self.kwargs['lang'] != None:
             translation.activate(self.kwargs['lang'])
-            print '>>LOCALE>>', _('klucz')
         return redirect(reverse('frontsite:index'))
 def token(request):
     return HttpResponse(_('klucz') + request.COOKIES.get('csrftoken'))
@@ -127,4 +130,4 @@ def vote(request, profile_id):
             vote = models.VoteUserProfile()
             vote.author, vote.user_profile, vote.strength = (request.user.profile, profile, 1)
             vote.save()
-    return redirect(reverse('frontsite:user'))
+    return redirect(reverse('frontsite:all_users'))

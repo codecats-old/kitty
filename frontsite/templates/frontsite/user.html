@@ -2,20 +2,64 @@
 {% load staticfiles %}
 {% block content %}
     <div class="row">
-        {% for user in users %}
-            <div class="col-md-4 well well-lg">
-                {{ user.username }}
-                <a href="mailto:{{ user.email }}">{{ user.email }}</a>
-                {% if user.profile %}
-                    <div class="pull-right">
-                        <a
-                                href="{% url 'frontsite:vote' user.profile.id %}"
-                                class="fa fa-plus fa-2x btn btn-danger"> {{ user.vote_strength | default_if_none:"0" }}
-                        </a>
+        <div class="col-md-3"></div>
+        <div class="col-md-6  text-center">
+            <div class="row well">
+                <div class="col-md-6">
+                    <div class="row ">
+                        <div class="col-md-4">
+                            <label class="badge badge-muted">Użytkownik</label>
+                        </div>
+                        <div class="col-md-8">
+                            <a href="{% url 'frontsite:user' user.id %}" class="text text-danger"><b>{{ user.username }}</b></a>
+                        </div>
                     </div>
-                {% endif %}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="badge badge-muted">E-mail</label>
+                        </div>
+                        <div class="col-md-8">
+                            <a href="mailto:{{ user.email }}" class="text text-danger"><b>{{ user.email }}</b></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="badge badge-muted">Imię</label>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="text text-danger">{{ user.first_name | default:"-" }}</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="badge badge-muted">Nazwisko</label>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="text text-danger">{{ user.last_name | default:"-" }}</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="badge badge-muted">Głosy</label>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="text text-danger">{{ votes.0.strength__sum | default:"0" }}</label>
+                        </div>
+                    </div>
+                    <i class="pull-right text-info">Ostatnio widziany: {{ user.last_login | date }}</i>
+                </div>
+                <div class="col-md-6">awatar</div>
+                <div class="col-md-12">
+                    {% for vote in votes %}
+                        <div class="label label-info">
+                            Siła głosu: {{ vote.strength }}, data: {{ vote.date }}
+                            <span class="badge">Głosujący: {{vote.author.user.username}}</span>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        {% endfor %}
+        </div>
+        <div class="col-md-3"></div>
     </div>
 {% endblock %}
 
