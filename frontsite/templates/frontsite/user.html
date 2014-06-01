@@ -48,7 +48,17 @@
                     </div>
                     <i class="pull-right text-info">Ostatnio widziany: {{ user.last_login | date }}</i>
                 </div>
-                <div class="col-md-6">awatar</div>
+                <div class="col-md-6">
+                    <img class="img img-circle" src="{% static user.profile.avatar.path %}" alt="awatar" />
+                    {% if request.user.is_authenticated == True and request.user.id == user.id %}
+                    <form class="col-md-12" method="post" enctype="multipart/form-data" action="{% url 'frontsite:avatar' %}">
+                        {{ avatarForm.as_p }}
+                        <input type="hidden" name="user_id" value="{{ user.id }}" />
+                        {% csrf_token %}
+                        <input type="submit" name="submit" value="Zapisz" />
+                    </form>
+                    {% endif %}
+                </div>
                 <div class="col-md-12">
                     {% for vote in votes %}
                         <div class="col-md-12 label label-info">

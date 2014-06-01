@@ -5,6 +5,12 @@ from django.db import models
 class UserProfile(models.Model):
     user = models.OneToOneField(auth.models.User, related_name='profile')
 
+class Avatar(models.Model):
+    name = models.CharField(max_length=50)
+    path = models.CharField(max_length=255)
+    file = models.FileField(upload_to='static/uploads')
+    profile = models.OneToOneField(UserProfile, related_name='avatar')
+
 class VoteUserProfile(models.Model):
     user_profile = models.ForeignKey(UserProfile, related_name='votes')
     author = models.ForeignKey(UserProfile, related_name='voted')

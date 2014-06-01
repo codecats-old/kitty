@@ -4,8 +4,14 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
-from frontsite.models import UserProfile, Category
+from frontsite.models import UserProfile, Category, Avatar
 
+
+class AvatarForm(forms.ModelForm):
+    # avatar = forms.FileField(widget=forms.FileInput())
+    class Meta:
+        model = Avatar
+        exclude = ('name', 'path', 'profile')
 
 class CategoryForm(forms.ModelForm):
     title = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder': u'Tytuł'}), label=u'Tytuł', error_messages={'required': 'Pole wymagane',})
