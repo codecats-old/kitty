@@ -70,12 +70,11 @@ class User(FormView):
         #print user.profile.id
         votes = None
         if hasattr(user, 'profile'):
-            votes = models.VoteUserProfile.objects.filter(user_profile=user.profile.id)\
-                .annotate(Sum('strength')).order_by('-date')
-
+            votes = models.VoteUserProfile.objects.filter(user_profile=user.profile).order_by('-date')
         return render(self.request, self.template_name, {
             'user': user,
-            'votes': votes
+            'votes': votes,
+            'votes_strength_count': votes.aggregate(Sum('strength'))['strength__sum']
         })
 def get_all_users(request):
     return render(request, 'frontsite/all_users.html', {

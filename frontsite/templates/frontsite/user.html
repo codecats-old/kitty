@@ -43,7 +43,7 @@
                             <label class="badge badge-muted">Głosy</label>
                         </div>
                         <div class="col-md-8">
-                            <label class="text text-danger">{{ votes.0.strength__sum | default:"0" }}</label>
+                            <label class="text text-danger">{{ votes_strength_count | default:"0" }}</label>
                         </div>
                     </div>
                     <i class="pull-right text-info">Ostatnio widziany: {{ user.last_login | date }}</i>
@@ -51,7 +51,7 @@
                 <div class="col-md-6">awatar</div>
                 <div class="col-md-12">
                     {% for vote in votes %}
-                        <div class="label label-info">
+                        <div class="col-md-12 label label-info">
                             Siła głosu: {{ vote.strength }}, data: {{ vote.date }}
                             <span class="badge">Głosujący: {{vote.author.user.username}}</span>
                         </div>
