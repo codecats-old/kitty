@@ -4,8 +4,20 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
-from frontsite.models import UserProfile, Category, Avatar
+from frontsite.models import UserProfile, Category, Avatar, Rhyme
 
+
+class RhymeForm(forms.ModelForm):
+    title = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+    content = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control'}))
+    class Meta:
+        model = Rhyme
+        fields = ('title', 'content', 'category')
+    def save(self, commit=True):
+        rhyme = super(RhymeForm, self).save(commit=False)
+        if commit is True:
+            rhyme.save()
+        return rhyme
 
 class AvatarForm(forms.ModelForm):
     file = forms.FileField(widget=forms.FileInput())

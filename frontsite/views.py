@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View, FormView
 from frontsite.decorators import anonymous_required, login_required
-from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm
+from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm, RhymeForm
 from frontsite import models
 from frontsite import utils
 
@@ -25,6 +25,46 @@ class Index(View):
     def get(self, request):
         print '>>>>', _('klucz')
         return render(request, self.template_name)
+
+class Rhyme(FormView):
+    template_name = 'frontsite/rhyme.html'
+
+    def find_data(self):
+        return models.Rhyme.objects.all().order_by('-created')
+
+    @method_decorator(login_required)
+    def post(self, *args, **kwargs):
+        form = RhymeForm(self.request.POST)
+        if form.is_valid():
+            rhyme = form.save(commit=False)
+            if self.kwargs.has_key('id'):
+                rhyme.id = self.kwargs['id']
+            rhyme.author = self.request.user.profile
+            rhyme.save()
+            rhyme.profiles.add(self.request.user.profile)
+            return  redirect(reverse('frontsite:index'))
+        return render(self.request, self.template_name, {
+            'form': form,
+            'rhymes': self.find_data(),
+            'rhymesAuthor': self.request.user.profile.created_rhymes,
+            'rhymesStored': self.request.user.profile.stored_rhymes
+        })
+
+    def get(self, *args, **kwargs):
+        rhyme, rhymesAuthor, rhymesStored = (None, None, None)
+        if hasattr(self.request.user, 'profile'):
+            rhymesAuthor, rhymesStored = (self.request.user.profile.created_rhymes, self.request.user.profile.stored_rhymes)
+        if self.kwargs.has_key('id'):
+            rhyme = models.Rhyme.objects.get(pk=self.kwargs['id'])
+            if self.kwargs.has_key('delete') and self.kwargs['delete'] == 'delete':
+                rhyme.delete()
+                return redirect(reverse('frontsite:index'))
+        return render(self.request, self.template_name, {
+            'form': RhymeForm(instance=rhyme),
+            'rhymes': self.find_data(),
+            'rhymesAuthor': rhymesAuthor,
+            'rhymesStored': rhymesStored
+        })
 
 class Category(FormView):
 
@@ -70,6 +110,8 @@ def avatar(request):
     avatar.path = utils.handle_uploaded_file(request.FILES['file'], request.POST['user_id'])
     avatar.name = request.POST['user_id']
     #avatar.file = request.FILES['file']
+    if request.user.profile.avatar is not None:
+        request.user.profile.avatar.delete()
     avatar.profile = request.user.profile
     avatar.save()
     return redirect(reverse('frontsite:user', kwargs={'id': request.POST['user_id']}))

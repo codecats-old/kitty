@@ -8,7 +8,6 @@ class UserProfile(models.Model):
 class Avatar(models.Model):
     name = models.CharField(max_length=50)
     path = models.CharField(max_length=255)
-    # file = models.FileField(upload_to='static/uploads')
     profile = models.OneToOneField(UserProfile, related_name='avatar')
 
 class VoteUserProfile(models.Model):
@@ -21,9 +20,16 @@ class Category(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now=True, blank=True)
+    def __unicode__(self):
+        return self.title
 
-# class Rhyme(models.Model):
-#     pass
+class Rhyme(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created = models.DateTimeField(auto_now=True, blank=True)
+    author = models.ForeignKey(UserProfile, related_name='created_rhymes')
+    profiles = models.ManyToManyField(UserProfile, related_name='stored_rhymes')
+    category = models.ForeignKey(Category, blank=False, related_name='rhymes')
 #
 # class VoteRhyme(models.Model):
 #     pass

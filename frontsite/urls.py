@@ -3,7 +3,9 @@ from frontsite import views
 from django.contrib.auth.views import logout
 
 urlpatterns = patterns('',
-   url(r'^$', views.Index.as_view(), name='index'),
+   #url(r'^$', views.Index.as_view(), name='index'),
+   url(r'^$', views.Rhyme.as_view(), name='index'),
+   url(r'^rhyme/(?P<id>\d+)/(?P<delete>\w+)?$', views.Rhyme.as_view(), name='rhyme_detail'),
    url(r'^avatar/$', views.avatar, name='avatar'),
    url(r'^show-avatar/(?P<path>.+)$', views.show_avatar, name='show-avatar'),
    url(r'^vote/(?P<profile_id>\d+)$', views.vote, name='vote'),

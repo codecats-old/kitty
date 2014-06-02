@@ -7,10 +7,18 @@
                 <a class="btn btn-success" href="{% url 'frontsite:user' user.id %}">{{ user.username }}</a>
                 <a href="mailto:{{ user.email }}">{{ user.email }}</a>
                 {% if user.profile %}
-                    <div class="pull-right">
+                    <hr>
+                    <div class="">
+                        {% if user.profile.avatar %}
+                            <img
+                                    class="img img-circle pull-left"
+                                    src="{% url 'frontsite:show-avatar' user.profile.avatar.path|add:'tiny' %}"
+                                    alt="awatar"
+                            />
+                        {% endif %}
                         <a
                                 href="{% url 'frontsite:vote' user.profile.id %}"
-                                class="fa fa-plus fa-2x btn btn-danger"> {{ user.vote_strength | default_if_none:"0" }}
+                                class="fa fa-plus fa-2x btn btn-danger pull-right"> {{ user.vote_strength | default_if_none:"0" }}
                         </a>
                     </div>
                 {% endif %}

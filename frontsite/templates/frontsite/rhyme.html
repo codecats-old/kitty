@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row">
+{% if request.user.is_authenticated == True and request.user.id == user.id %}
+    <div class="col-md-12 well">
+        <form action="" role="form" method="post">
+            {% for field in form.visible_fields %}
+                <div class="form-group {% if field.errors %}has-error{% endif %}">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <div class="text-warning bg bg-danger">{{ field.errors }}</div>
+                </div>
+            {% endfor %}
+            {% csrf_token %}
+            <input class="btn btn-success col-md-12" type="submit" value="Zapisz" />
+        </form>
+    </div>
+{% endif %}
+    <div class="col-md-12">
+        {% for rhyme in rhymes %}
+            <div class="col-md-4 well">
+                <h2 class="text-center"><a href="#details">{{ rhyme.title }}</a></h2>
+                <p>{{ rhyme.content|linebreaks }}</p>
+                <div class="row">
+                    <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
+                    <a class="btn btn-danger" href="#">Podoba się <i class="fa fa-plus fa-2x"> 1</i></a>
+                    <br>
+                    <div class="center-block pull-right">
+                        <a class="btn btn-primary" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
+                        <a class="btn btn-primary" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
