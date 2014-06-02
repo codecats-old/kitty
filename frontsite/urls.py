@@ -5,6 +5,7 @@ from django.contrib.auth.views import logout
 urlpatterns = patterns('',
    url(r'^$', views.Index.as_view(), name='index'),
    url(r'^avatar/$', views.avatar, name='avatar'),
+   url(r'^show-avatar/(?P<path>.+)$', views.show_avatar, name='show-avatar'),
    url(r'^vote/(?P<profile_id>\d+)$', views.vote, name='vote'),
    url(r'^category$', views.Category.as_view(), name='category'),
    url(r'^category/(?P<id>\d+)/(?P<delete>\w+)?$', views.Category.as_view(), name='category_detail'),
@@ -15,5 +16,4 @@ urlpatterns = patterns('',
    url(r'^login$', views.Login.as_view(), name='login'),
    url(r'^registration$', views.Registration.as_view(), name='registration'),
    url(r'^logout$', views.Logout.as_view(), name='logout'),
-
 )

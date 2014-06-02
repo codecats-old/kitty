@@ -69,10 +69,15 @@ def avatar(request):
     avatar = models.Avatar()
     avatar.path = utils.handle_uploaded_file(request.FILES['file'], request.POST['user_id'])
     avatar.name = request.POST['user_id']
-    avatar.file = request.FILES['file']
+    #avatar.file = request.FILES['file']
     avatar.profile = request.user.profile
     avatar.save()
     return redirect(reverse('frontsite:user', kwargs={'id': request.POST['user_id']}))
+
+def show_avatar(request, path):
+    response = HttpResponse(content_type = "application/octet-stream")
+    with open(path, 'r') as f: response.content = f.read()
+    return response
 
 class User(View):
     template_name = 'frontsite/user.html'

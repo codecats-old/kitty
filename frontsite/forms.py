@@ -8,7 +8,7 @@ from frontsite.models import UserProfile, Category, Avatar
 
 
 class AvatarForm(forms.ModelForm):
-    # avatar = forms.FileField(widget=forms.FileInput())
+    file = forms.FileField(widget=forms.FileInput())
     class Meta:
         model = Avatar
         exclude = ('name', 'path', 'profile')
