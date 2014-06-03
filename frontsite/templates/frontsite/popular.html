@@ -29,6 +29,30 @@
                     {% endif %}
                 {% endfor %}
             </ol>
+
+            <h2 class="text text-success">Najwięcej zapisanych</h2>
+            <ol class="well">
+                {% for rhyme in mostSaved %}
+                    <li class="well">
+                        <h3 class="text text-success">{{ rhyme.title }}</h3>
+                        <h4><small>{{ rhyme.category.title }}</small></h4>
+                        {{ rhyme.content|linebreaks }}
+                        <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
+                        {% if request.user.is_authenticated == True %}
+                            {% if rhyme in request.user.profile.stored_rhymes.all %}
+                                <a href="{% url 'frontsite:rhyme-unstore' rhyme.id %}" class="pull-left btn btn-success">Wypisz się</a>
+                            {% else %}
+                                <a href="{% url 'frontsite:rhyme-store' rhyme.id %}" class="pull-left btn btn-success">Zapisz</a>
+                            {% endif %}
+                            <br>
+                            <!--<a class="btn btn-danger" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">-->
+                                <!--Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>-->
+                            <!--</a>-->
+                        {% endif %}
+                        <br>
+                    </li>
+                {% endfor %}
+            </ol>
         </div>
         <div class="col-md-2"></div>
     </div>

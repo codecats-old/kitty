@@ -3,7 +3,7 @@ import json
 from random import randint
 from django.contrib import auth
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.contrib.auth import logout
@@ -122,7 +122,6 @@ def avatar(request):
     avatar = models.Avatar()
     avatar.path = utils.handle_uploaded_file(request.FILES['file'], request.POST['user_id'])
     avatar.name = request.POST['user_id']
-    #avatar.file = request.FILES['file']
     if request.user.profile.avatar is not None:
         request.user.profile.avatar.delete()
     avatar.profile = request.user.profile
@@ -259,6 +258,10 @@ def random(request):
     })
 
 def most_popular(request):
+    mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles'), vote_strength=Sum('votes__strength')).order_by('-saved_count')[:5]
+    print '>>>>>>>>>>>', mostSaved
     return render(request, 'frontsite/popular.html', {
-        'mostLiked': models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5]
+        'mostLiked': models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5],
+        'mostSaved': models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).order_by('-saved_count')[:5]
+        #.annotate(vote_strength=Sum('votes__strength'))
     })
