@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from random import randint
 from django.contrib import auth
 from django.db.models import Sum
 from django.utils.translation import ugettext as _
@@ -210,9 +211,33 @@ def vote_rhyme(request, rhyme_id):
 
 def rhyme_store(request, id):
     rhyme = models.Rhyme.objects.get(pk=id)
-    #if rhyme.id  not in request.user.profile.stored_rhymes:
-    if models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]) is not None:
+    if not models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]):
         request.user.profile.stored_rhymes.add(rhyme)
         request.user.profile.save()
-        print 'add here'
-    print 'yupi'
+    return redirect(reverse('frontsite:stored'))
+
+def rhyme_unstore(request, id):
+    rhyme = models.Rhyme.objects.get(pk=id)
+    if models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]):
+        request.user.profile.stored_rhymes.remove(rhyme)
+        request.user.profile.save()
+    return redirect(reverse('frontsite:stored'))
+
+def stored(request):
+    return render(request, 'frontsite/stored.html')
+
+def random(request):
+    rhyme, countAll = (None, models.Rhyme.objects.all().count())
+    while rhyme is None:
+        try:
+            rhyme = models.Rhyme.objects.get(pk=randint(1, countAll))
+        except:
+            pass
+    return render(request, 'frontsite/random.html', {
+        'rhyme': rhyme
+    })
+
+def most_popular(request):
+    return render(request, 'frontsite/popular.html', {
+        'mostLiked': models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5]
+    })

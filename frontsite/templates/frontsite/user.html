@@ -65,7 +65,9 @@
                     {% for vote in votes %}
                         <div class="col-md-12 label label-info">
                             Siła głosu: {{ vote.strength }}, data: {{ vote.date }}
-                            <span class="badge">Głosujący: {{vote.author.user.username}}</span>
+                            <a href="{% url 'frontsite:user' vote.author.user.id %}" class="badge">
+                                Głosujący: {{vote.author.user.username}}
+                            </a>
                         </div>
                     {% endfor %}
                 </div>

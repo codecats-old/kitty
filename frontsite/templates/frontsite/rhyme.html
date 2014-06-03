@@ -25,7 +25,7 @@
     <div class="col-md-12">
         {% for rhyme in rhymes %}
             <div class="col-md-4 well">
-                <h2 class="text-center"><a href="#details">{{ rhyme.title }}</a><small> {{ rhyme.category.title}}</small></h2>
+                <h2 class="text-center"><a href="#details">{{ rhyme.title }}</a><small> {{ rhyme.category.title }}</small></h2>
                 <p>{{ rhyme.content|linebreaks }}</p>
                 <div class="row">
                     <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
@@ -37,10 +37,15 @@
                         </a>
                         <hr>
                         <div class="center-block">
-                        <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-store' rhyme.id %}">
-                            Zapisz
-                        </a>
-
+                        {% if rhyme not in request.user.profile.stored_rhymes.all %}
+                            <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-store' rhyme.id %}">
+                                Zapisz
+                            </a>
+                        {% else %}
+                            <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-unstore' rhyme.id %}">
+                                Wypisz się
+                            </a>
+                        {% endif %}
                         {% if rhyme.author.id == request.user.profile.id %}
                             <a class="pull-right btn btn-primary" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
                             <a class="pull-right btn btn-primary" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>

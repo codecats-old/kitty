@@ -39,8 +39,20 @@
                         <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
                             <a class="btn" href="{% url 'frontsite:all_users' %}">Użytkownicy <i class="fa fa-users"></i></a>
                         </li>
-                        <li><a class="btn" href="#">Najpopularniejsze <i class="fa fa-slack"></i></a></li>
-                        <li><a class="btn" href="#">Losowe <i class="fa fa-random"></i></a></li>
+                        {% url 'frontsite:popular' as currentUrl %}
+                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                            <a class="btn" href="{% url 'frontsite:popular' %}">Najpopularniejsze <i class="fa fa-slack"></i></a>
+                        </li>
+                        {% url 'frontsite:random' as currentUrl %}
+                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                            <a class="btn" href="{% url 'frontsite:random' %}">Losowe <i class="fa fa-random"></i></a>
+                        </li>
+                        {% if request.user.is_authenticated == True %}
+                        {% url 'frontsite:stored' as currentUrl %}
+                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                            <a class="btn" href="{% url 'frontsite:stored' %}">Zapisane <i class="fa fa-book"></i></a>
+                        </li>
+                        {% endif %}
                         {% comment %}
                         <li class="dropdown">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">Messages <b class="caret"></b></a>
