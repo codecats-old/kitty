@@ -16,10 +16,12 @@
                                     alt="awatar"
                             />
                         {% endif %}
+                        {% if request.user.is_authenticated == True %}
                         <a
                                 href="{% url 'frontsite:vote' user.profile.id %}"
                                 class="fa fa-plus fa-2x btn btn-danger pull-right"> {{ user.vote_strength | default_if_none:"0" }}
                         </a>
+                        {% endif %}
                     </div>
                 {% endif %}
             </div>

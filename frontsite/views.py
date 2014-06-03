@@ -30,7 +30,7 @@ class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
 
     def find_data(self):
-        return models.Rhyme.objects.all().order_by('-created')
+        return models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-created')
 
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
@@ -198,3 +198,21 @@ def vote(request, profile_id):
             vote.author, vote.user_profile, vote.strength = (request.user.profile, profile, 1)
             vote.save()
     return redirect(reverse('frontsite:all_users'))
+
+
+def vote_rhyme(request, rhyme_id):
+    vote = models.VoteRhyme.objects.filter(author__id=request.user.profile.id, rhyme__id=rhyme_id)
+    if not vote:
+        vote = models.VoteRhyme()
+        vote.author, vote.rhyme, vote.strength = (request.user.profile, models.Rhyme.objects.get(pk=rhyme_id), 1)
+        vote.save()
+    return redirect(reverse('frontsite:index'))
+
+def rhyme_store(request, id):
+    rhyme = models.Rhyme.objects.get(pk=id)
+    #if rhyme.id  not in request.user.profile.stored_rhymes:
+    if models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]) is not None:
+        request.user.profile.stored_rhymes.add(rhyme)
+        request.user.profile.save()
+        print 'add here'
+    print 'yupi'

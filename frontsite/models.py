@@ -30,10 +30,13 @@ class Rhyme(models.Model):
     author = models.ForeignKey(UserProfile, related_name='created_rhymes')
     profiles = models.ManyToManyField(UserProfile, related_name='stored_rhymes')
     category = models.ForeignKey(Category, blank=False, related_name='rhymes')
-#
-# class VoteRhyme(models.Model):
-#     pass
-#
+
+class VoteRhyme(models.Model):
+    rhyme = models.ForeignKey(Rhyme, related_name='votes')
+    author = models.ForeignKey(UserProfile, related_name='rhyme_voted')
+    data = models.DateTimeField(auto_now=True, blank=True)
+    strength = models.PositiveSmallIntegerField(default=1, blank=True)
+
 # class SavedRhyme(models.Model):
 #     pass
 #

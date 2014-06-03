@@ -3,7 +3,12 @@
 {% block content %}
 <div class="row">
 {% if request.user.is_authenticated == True and request.user.id == user.id %}
-    <div class="col-md-12 well">
+    <div class="text-center">
+        <button type="button" class="btn text-warning text-center fa fa-folder-open" data-toggle="collapse" data-target="#demo">
+            Dodaj
+        </button>
+    </div>
+    <div class="col-md-12 well collapse out" id="demo">
         <form action="" role="form" method="post">
             {% for field in form.visible_fields %}
                 <div class="form-group {% if field.errors %}has-error{% endif %}">
@@ -20,16 +25,28 @@
     <div class="col-md-12">
         {% for rhyme in rhymes %}
             <div class="col-md-4 well">
-                <h2 class="text-center"><a href="#details">{{ rhyme.title }}</a></h2>
+                <h2 class="text-center"><a href="#details">{{ rhyme.title }}</a><small> {{ rhyme.category.title}}</small></h2>
                 <p>{{ rhyme.content|linebreaks }}</p>
                 <div class="row">
                     <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
-                    <a class="btn btn-danger" href="#">Podoba się <i class="fa fa-plus fa-2x"> 1</i></a>
                     <br>
-                    <div class="center-block pull-right">
-                        <a class="btn btn-primary" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
-                        <a class="btn btn-primary" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
-                    </div>
+                    <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="pull-right">{{ rhyme.author.user.username }}</a>
+                    {% if request.user.is_authenticated == True %}
+                        <a class="btn btn-danger" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
+                            Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
+                        </a>
+                        <hr>
+                        <div class="center-block">
+                        <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-store' rhyme.id %}">
+                            Zapisz
+                        </a>
+
+                        {% if rhyme.author.id == request.user.profile.id %}
+                            <a class="pull-right btn btn-primary" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
+                            <a class="pull-right btn btn-primary" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
+                        {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
