@@ -26,6 +26,23 @@
                 {% endif %}
             </div>
         {% endfor %}
+        <div class="row">
+            <div class="text-center pagination col-md-12">
+                <span class="step-links">
+                    {% if users.has_previous %}
+                        <a href="?page={{ users.previous_page_number }}">poprzednia</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Strona {{ users.number }} z {{ users.paginator.num_pages }}.
+                    </span>
+
+                    {% if users.has_next %}
+                        <a href="?page={{ users.next_page_number }}">następna</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
     </div>
 {% endblock %}
 

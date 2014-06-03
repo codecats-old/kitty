@@ -9,6 +9,7 @@
             <link type="text/css" href="{% static 'frontsite/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
             <link type="text/css" href="{% static 'frontsite/font-awesome-4.1.0/css/font-awesome.min.css' %}" rel="stylesheet" />
             <link type="text/css" href="{% static 'frontsite/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" />
+            <link type="text/css" href="{% static 'frontsite/main.css' %}" rel="stylesheet" />
         {% endblock %}
         {% block stylesheets-custom %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{% static 'frontsite/icon.jpeg' %}" />
@@ -85,7 +86,7 @@
             </nav>
             {% endblock %}
         {% endblock %}
-<section class="container">
+<section class="container well-opacity">
 {% block body %}
     {% block content %}{% endblock %}
 {% endblock %}

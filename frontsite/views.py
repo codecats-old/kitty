@@ -2,6 +2,7 @@
 import json
 from random import randint
 from django.contrib import auth
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Sum
 from django.utils.translation import ugettext as _
 from django.utils import translation
@@ -31,7 +32,16 @@ class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
 
     def find_data(self):
-        return models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-created')
+        rhymes = models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-created')
+        paginator = Paginator(rhymes, 10)
+        page = self.request.GET.get('page')
+        try:
+            rhymes = paginator.page(page)
+        except PageNotAnInteger:
+            rhymes = paginator.page(1)
+        except EmptyPage:
+            rhymes = paginator.page(paginator.num_pages)
+        return rhymes
 
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
@@ -60,9 +70,11 @@ class Rhyme(FormView):
             if self.kwargs.has_key('delete') and self.kwargs['delete'] == 'delete':
                 rhyme.delete()
                 return redirect(reverse('frontsite:index'))
+
+        rhymes = self.find_data()
         return render(self.request, self.template_name, {
             'form': RhymeForm(instance=rhyme),
-            'rhymes': self.find_data(),
+            'rhymes': rhymes,
             'rhymesAuthor': rhymesAuthor,
             'rhymesStored': rhymesStored
         })
@@ -139,8 +151,17 @@ class User(View):
         })
 
 def get_all_users(request):
+    users = auth.models.User.objects.all().annotate(vote_strength=Sum('profile__votes__strength'))
+    paginator = Paginator(users, 20)
+    page = request.GET.get('page')
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
     return render(request, 'frontsite/all_users.html', {
-        'users' : auth.models.User.objects.all().annotate(vote_strength=Sum('profile__votes__strength'))
+        'users' : users
     })
 
 class Locale(View):
