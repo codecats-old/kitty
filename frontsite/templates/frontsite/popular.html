@@ -45,9 +45,9 @@
                                 <a href="{% url 'frontsite:rhyme-store' rhyme.id %}" class="pull-left btn btn-success">Zapisz</a>
                             {% endif %}
                             <br>
-                            <!--<a class="btn btn-danger" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">-->
-                                <!--Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>-->
-                            <!--</a>-->
+                            <a class="btn btn-danger" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
+                                Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
+                            </a>
                         {% endif %}
                         <br>
                     </li>

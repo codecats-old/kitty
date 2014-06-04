@@ -258,10 +258,14 @@ def random(request):
     })
 
 def most_popular(request):
-    mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles'), vote_strength=Sum('votes__strength')).order_by('-saved_count')[:5]
-    print '>>>>>>>>>>>', mostSaved
+    mostLiked = models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5]
+    mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).order_by('-saved_count')[:6]
+    for rhyme in mostSaved:
+        for liked in mostLiked:
+            if liked.id == rhyme.id:
+                setattr(rhyme, 'vote_strength', liked.vote_strength)
     return render(request, 'frontsite/popular.html', {
-        'mostLiked': models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5],
-        'mostSaved': models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).order_by('-saved_count')[:5]
+        'mostLiked': mostLiked,
+        'mostSaved': mostSaved
         #.annotate(vote_strength=Sum('votes__strength'))
     })
