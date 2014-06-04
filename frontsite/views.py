@@ -16,7 +16,7 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View, FormView
 from frontsite.decorators import anonymous_required, login_required
-from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm, RhymeForm
+from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm, RhymeForm, CommentForm
 from frontsite import models
 from frontsite import utils
 
@@ -27,6 +27,22 @@ class Index(View):
     def get(self, request):
         print '>>>>', _('klucz')
         return render(request, self.template_name)
+
+def rhyme_view(request, id):
+    rhyme = models.Rhyme.objects.annotate(vote_strength=Sum('votes__strength')).get(pk=id)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.rhyme = rhyme
+            comment.save()
+            return redirect(reverse('frontsite:rhyme_view', kwargs={'id': id}))
+    else: form = CommentForm()
+    return render(request, 'frontsite/rhyme_view.html', {
+        'rhyme': rhyme,
+        'form': form
+    })
 
 class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
@@ -260,6 +276,24 @@ def random(request):
 def most_popular(request):
     mostLiked = models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5]
     mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).order_by('-saved_count')[:6]
+    """
+    mostSaved = models.Rhyme.objects.raw('''
+        SELECT tab.id, SUM("frontsite_voterhyme"."strength") AS "vote_strength"
+        FROM(
+            SELECT
+            "frontsite_rhyme"."id", "frontsite_rhyme"."title", "frontsite_rhyme"."content",    "frontsite_rhyme"."created", "frontsite_rhyme"."author_id", "frontsite_rhyme"."category_id",
+
+            COUNT("frontsite_rhyme_profiles"."userprofile_id") AS "saved_count"
+            FROM "frontsite_rhyme"
+            LEFT OUTER JOIN "frontsite_rhyme_profiles" ON ( "frontsite_rhyme"."id" = "frontsite_rhyme_profiles"."rhyme_id" )
+            GROUP BY "frontsite_rhyme"."id", "frontsite_rhyme"."title", "frontsite_rhyme"."content", "frontsite_rhyme"."created", "frontsite_rhyme"."author_id", "frontsite_rhyme"."category_id"
+            ORDER BY "saved_count"
+            DESC LIMIT 6
+        )tab
+        LEFT OUTER JOIN "frontsite_voterhyme" ON ( tab."id" = "frontsite_voterhyme"."rhyme_id" )
+        GROUP BY tab.id
+    ''')
+    """
     for rhyme in mostSaved:
         for liked in mostLiked:
             if liked.id == rhyme.id:
@@ -267,5 +301,4 @@ def most_popular(request):
     return render(request, 'frontsite/popular.html', {
         'mostLiked': mostLiked,
         'mostSaved': mostSaved
-        #.annotate(vote_strength=Sum('votes__strength'))
     })

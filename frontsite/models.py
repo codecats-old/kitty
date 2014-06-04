@@ -37,11 +37,7 @@ class VoteRhyme(models.Model):
     data = models.DateTimeField(auto_now=True, blank=True)
     strength = models.PositiveSmallIntegerField(default=1, blank=True)
 
-# class SavedRhyme(models.Model):
-#     pass
-#
-# class Comment(models.Model):
-#     pass
-#
-# class VoteComment(models.Model):
-#     pass
+class Comment(models.Model):
+    content = models.TextField()
+    date = models.DateTimeField(auto_now=True, blank=True)
+    rhyme = models.ForeignKey(Rhyme, related_name='comments')

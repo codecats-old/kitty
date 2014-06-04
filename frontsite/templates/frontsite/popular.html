@@ -9,7 +9,9 @@
                 {% for rhyme in mostLiked %}
                     {% if rhyme.vote_strength != None %}
                         <li class="well">
-                            <h3 class="text text-success">{{ rhyme.title }}</h3>
+                            <h3 class="text text-success">
+                                <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a>
+                            </h3>
                             <h4><small>{{ rhyme.category.title }}</small></h4>
                             {{ rhyme.content|linebreaks }}
                             <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
@@ -34,7 +36,9 @@
             <ol class="well">
                 {% for rhyme in mostSaved %}
                     <li class="well">
-                        <h3 class="text text-success">{{ rhyme.title }}</h3>
+                        <h3 class="text text-success">
+                            <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a>
+                        </h3>
                         <h4><small>{{ rhyme.category.title }}</small></h4>
                         {{ rhyme.content|linebreaks }}
                         <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>

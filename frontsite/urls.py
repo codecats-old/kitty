@@ -5,6 +5,7 @@ from django.contrib.auth.views import logout
 urlpatterns = patterns('',
    #url(r'^$', views.Index.as_view(), name='index'),
    url(r'^$', views.Rhyme.as_view(), name='index'),
+   url(r'^rhyme-view/(?P<id>\d+)$', views.rhyme_view, name='rhyme_view'),
    url(r'^most-popular/$', views.most_popular, name='popular'),
    url(r'^random/$', views.random, name='random'),
    url(r'^stored/$', views.stored, name='stored'),

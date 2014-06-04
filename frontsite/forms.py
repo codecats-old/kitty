@@ -4,8 +4,17 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
-from frontsite.models import UserProfile, Category, Avatar, Rhyme
+from frontsite.models import UserProfile, Category, Avatar, Rhyme, Comment
 
+
+class CommentForm(forms.ModelForm):
+    content = forms.CharField(widget=forms.Textarea(
+        attrs={'class': 'form-control'}), label=u'Komentarz',
+        error_messages={'invalid': u'Komentarz ma zły format.'}
+    )
+    class Meta:
+        model = Comment
+        fields = ('content', )
 
 class RhymeForm(forms.ModelForm):
     title = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))

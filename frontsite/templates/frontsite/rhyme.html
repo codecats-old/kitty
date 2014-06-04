@@ -25,7 +25,10 @@
     <div class="col-md-12">
         {% for rhyme in rhymes %}
             <div class="col-md-4 well">
-                <h2 class="text-center"><a href="#details">{{ rhyme.title }}</a><small> {{ rhyme.category.title }}</small></h2>
+                <h2 class="text-center">
+                    <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
+                        {{ rhyme.title }}</a><small> {{ rhyme.category.title }}</small>
+                </h2>
                 <p>{{ rhyme.content|linebreaks }}</p>
                 <div class="row">
                     <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>

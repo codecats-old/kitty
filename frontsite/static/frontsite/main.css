@@ -9,5 +9,5 @@ background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,0.9) 0%,
 background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.9) 34%,rgba(255,255,255,0.9) 59%,rgba(255,255,255,0.9) 100%); /* IE10+ */
 background: radial-gradient(ellipse at center,  rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.9) 34%,rgba(255,255,255,0.9) 59%,rgba(255,255,255,0.9) 100%); /* W3C */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6ffffff', endColorstr='#e6ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-padding: 50px;
+
 }
