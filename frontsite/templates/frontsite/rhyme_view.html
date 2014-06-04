@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% load staticfiles %}
+{% load filters %}
 {% block content %}
     <div class="row">
         <div class="col-md-2"></div>
@@ -30,7 +31,7 @@
             {% endif %}
             {% for comment in rhyme.comments.all %}
                 <div class="col-md-12 well">
-                    <span class="pull-right">{{ comment.date | commatodot }}</span>
+                    <span class="pull-right">{{ comment.date|commatodot:'a' }}</span>
                     <p>
                         {{ comment.content|linebreaks }}
                     </p>
