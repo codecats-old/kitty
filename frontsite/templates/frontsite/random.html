@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8 well text-center">
-            <h3>{{ rhyme.title }}</h3>
+            <h3><a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a></h3>
             <h4><small>{{ rhyme.category.title }}</small></h4>
             {{ rhyme.content|linebreaks }}
             <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>

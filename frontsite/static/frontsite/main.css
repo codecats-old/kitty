@@ -1,5 +1,8 @@
 body{
     background-image:url('img/bg.png');
+    *background-image:url('w3css.gif');
+    *background-repeat:no-repeat;
+    background-attachment:fixed;
 }
 .well-opacity{
 background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.9) 34%, rgba(255,255,255,0.9) 59%, rgba(255,255,255,0.9) 100%); /* FF3.6+ */

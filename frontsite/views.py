@@ -28,7 +28,24 @@ class Index(View):
         print '>>>>', _('klucz')
         return render(request, self.template_name)
 
+def delete_comment(request, id):
+    comment = models.Comment.objects.get(pk=id)
+    rhyme = comment.rhyme
+    comment.delete()
+    return redirect(reverse('frontsite:rhyme_view', kwargs={'id':rhyme.id}))
+
 def rhyme_view(request, id):
+    def find_comments(rhyme):
+        comments = models.Comment.objects.all().filter(rhyme=rhyme).order_by('-date')
+        paginator = Paginator(comments, 10)
+        page = request.GET.get('page')
+        try:
+            comments = paginator.page(page)
+        except PageNotAnInteger:
+            comments = paginator.page(1)
+        except EmptyPage:
+            comments = paginator.page(paginator.num_pages)
+        return comments
     rhyme = models.Rhyme.objects.annotate(vote_strength=Sum('votes__strength')).get(pk=id)
 
     if request.method == 'POST':
@@ -36,11 +53,13 @@ def rhyme_view(request, id):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.rhyme = rhyme
+            comment.author = request.user.profile
             comment.save()
             return redirect(reverse('frontsite:rhyme_view', kwargs={'id': id}))
     else: form = CommentForm()
     return render(request, 'frontsite/rhyme_view.html', {
         'rhyme': rhyme,
+        'comments': find_comments(rhyme),
         'form': form
     })
 
@@ -293,6 +312,13 @@ def most_popular(request):
         LEFT OUTER JOIN "frontsite_voterhyme" ON ( tab."id" = "frontsite_voterhyme"."rhyme_id" )
         GROUP BY tab.id
     ''')
+    """
+    #or
+    """
+    mostSaved = models.Rhyme.objects.all().annotate(
+        saved_count=Count('profiles', distinct=True),
+        vote_strength=Sum('votes__strength', distinct=True)
+    ).order_by('-saved_count')[:6]
     """
     for rhyme in mostSaved:
         for liked in mostLiked:

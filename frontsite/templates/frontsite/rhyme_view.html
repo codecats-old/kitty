@@ -29,14 +29,37 @@
                     <input class="btn btn-success" type="submit" value="Wyślij" />
                 </form>
             {% endif %}
-            {% for comment in rhyme.comments.all %}
+            {% for comment in comments %}
                 <div class="col-md-12 well">
-                    <span class="pull-right">{{ comment.date|commatodot:'a' }}</span>
+                    <a href="{% url 'frontsite:user' comment.author.user.id %}" class="pull-left">
+                        {{ comment.author.user.username }}
+                    </a>
+                    <span class="pull-right">{{ comment.date }}</span>
                     <p>
                         {{ comment.content|linebreaks }}
                     </p>
+                    {% if comment.author.id = request.user.profile.id or rhyme.author.id = request.user.profile.id %}
+                        <a href="{% url 'frontsite:delete_comment' comment.id %}" class="btn btn-danger btn-xs pull-right">Usuń</a>
+                    {% endif %}
                 </div>
             {% endfor %}
+            <div class="row">
+                <div class="text-center pagination col-md-12">
+                    <span class="step-links">
+                        {% if comments.has_previous %}
+                            <a href="?page={{ comments.previous_page_number }}">poprzednia</a>
+                        {% endif %}
+    
+                        <span class="current">
+                            Strona {{ comments.number }} z {{ comments.paginator.num_pages }}.
+                        </span>
+    
+                        {% if comments.has_next %}
+                            <a href="?page={{ comments.next_page_number }}">następna</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="col-md-2"></div>
     </div>

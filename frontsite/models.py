@@ -41,3 +41,4 @@ class Comment(models.Model):
     content = models.TextField()
     date = models.DateTimeField(auto_now=True, blank=True)
     rhyme = models.ForeignKey(Rhyme, related_name='comments')
+    author = models.ForeignKey(UserProfile, related_name='commented_rhymes')
