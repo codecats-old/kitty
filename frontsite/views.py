@@ -20,14 +20,6 @@ from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm, Rhyme
 from frontsite import models
 from frontsite import utils
 
-class Index(View):
-    template_name = 'frontsite/index.html'
-
-    @method_decorator(login_required)
-    def get(self, request):
-        print '>>>>', _('klucz')
-        return render(request, self.template_name)
-
 def delete_comment(request, id):
     comment = models.Comment.objects.get(pk=id)
     rhyme = comment.rhyme
