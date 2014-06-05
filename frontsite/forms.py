@@ -42,8 +42,10 @@ class CategoryForm(forms.ModelForm):
         fields = ('title', 'description')
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput())
-    confirm_password = forms.CharField(widget=forms.PasswordInput())
+    username = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder': u'Nazwa użytkownika'}), label=u'Nazwa użytkownika', error_messages={'required': 'Pole wymagane',})
+    email = forms.CharField(widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder': u'E-mail'}), label=u'E-mail', error_messages={'required': 'Pole wymagane',})
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder': u'Hasło'}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder': u'Powtórz'}))
     class Meta:
         model = User
         fields = ('username', 'email', 'password')
@@ -73,8 +75,8 @@ class UserForm(forms.ModelForm):
 
 class LoginForm(forms.ModelForm):
     user = None
-    password = forms.CharField(widget=forms.PasswordInput())
-    login = forms.CharField(widget=forms.TextInput())
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label=u'Hasło')
+    login = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label=u'Login')
     class Meta:
         model = User
         fields = ('login', 'password')

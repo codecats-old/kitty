@@ -154,13 +154,14 @@ class Category(FormView):
         })
 
 def avatar(request):
-    avatar = models.Avatar()
-    avatar.path = utils.handle_uploaded_file(request.FILES['file'], request.POST['user_id'])
-    avatar.name = request.POST['user_id']
-    if request.user.profile.avatar is not None:
-        request.user.profile.avatar.delete()
-    avatar.profile = request.user.profile
-    avatar.save()
+    if 'file' in request.FILES:
+        avatar = models.Avatar()
+        avatar.path = utils.handle_uploaded_file(request.FILES['file'], request.POST['user_id'])
+        avatar.name = request.POST['user_id']
+        if hasattr(request.user.profile, 'avatar'):
+            request.user.profile.avatar.delete()
+        avatar.profile = request.user.profile
+        avatar.save()
     return redirect(reverse('frontsite:user', kwargs={'id': request.POST['user_id']}))
 
 def show_avatar(request, path):
