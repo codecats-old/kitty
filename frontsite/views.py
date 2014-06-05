@@ -275,10 +275,10 @@ def stored(request):
     return render(request, 'frontsite/stored.html')
 
 def random(request):
-    rhyme, countAll = (None, models.Rhyme.objects.all().count())
+    rhyme, lastId = (None, models.Rhyme.objects.all().order_by('-id')[0].id)
     while rhyme is None:
         try:
-            rhyme = models.Rhyme.objects.get(pk=randint(1, countAll))
+            rhyme = models.Rhyme.objects.get(pk=randint(1, lastId))
         except:
             pass
     return render(request, 'frontsite/random.html', {
