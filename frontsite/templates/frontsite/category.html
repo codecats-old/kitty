@@ -11,7 +11,7 @@
                     <small class="pull-right">{{ category.created | date:"j E, Y" }}</small>
                 </p>
                 <br />
-                {% if request.user.is_authenticated == True %}
+                {% if request.user.is_authenticated == True and request.user.is_staff == True %}
                     <a href="{% url 'frontsite:category_detail' category.id %}" class="btn btn-primary pull-right btn-xs">Edytuj</a>
                     <a href="{% url 'frontsite:category_detail' id=category.id delete='delete' %}" class="btn btn-primary pull-right btn-xs">Usuń</a>
                 {% endif %}
@@ -19,7 +19,7 @@
         {% endfor %}
     </div>
     <div class="col-md-4">
-        {% if request.user.is_authenticated == True %}
+        {% if request.user.is_authenticated == True and request.user.is_staff == True %}
         <form action="" role="form" method="post">
             {% for field in form.visible_fields %}
                 <div class="form-group {% if field.errors %}has-error{% endif %}">
