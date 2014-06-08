@@ -1,12 +1,9 @@
-from django.contrib import auth
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase, RequestFactory
-from django.utils.importlib import import_module
-from kitty import settings
+from django.test import TestCase
 
 
-class FiltersTestCase(TestCase):
+class AccessTestCase(TestCase):
     user = None
 
     def setUp(self):
@@ -16,16 +13,14 @@ class FiltersTestCase(TestCase):
         user.email = 'test@t.t'
         user.save()
         self.user = user
-        # self.user = auth.authenticate(username=user.username, password='abc')
 
-    def authenticate(self):
+    def test_approve_authenticated(self):
         response = self.client.logout()
-        self.assertFalse(response.request.user.is_authenticated())
-        # self.client.login()
-        # self.assertTrue(self.request.user.is_authenticated())
-        # auth.logout(self.request)
+        self.client.login(username=self.user.username, password='abc')
+        response = self.client.get(reverse('frontsite:user', kwargs={'id':self.user.id}))
+        self.assertEquals(response.status_code, 200)
 
-    def test_access_denies_anonymous(self):
+    def test_denies_anonymous(self):
         self.client.logout()
         params = [
             {'frontsite:user': [{'id': '1'}]},

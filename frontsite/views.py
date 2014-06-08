@@ -168,12 +168,17 @@ class User(View):
     def get(self, *args, **kwargs):
         user = auth.models.User.objects.get(pk=self.kwargs.get('id'))
         votes = None
+        strength_sum = None
         if hasattr(user, 'profile'):
             votes = models.VoteUserProfile.objects.filter(user_profile=user.profile).order_by('-date')
+        if votes:
+            aggregate = votes.aggregate(Sum('strength'))
+            if hasattr(aggregate, 'strength__sum'):
+                strength_sum = aggregate['strength__sum']
         return render(self.request, self.template_name, {
             'user': user,
             'votes': votes,
-            'votes_strength_count': votes.aggregate(Sum('strength'))['strength__sum'],
+            'votes_strength_count': strength_sum,
             'avatarForm': AvatarForm()
         })
 
