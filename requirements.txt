@@ -1,3 +1,2 @@
 # Database:
 psycopg2
-South==0.8.4
