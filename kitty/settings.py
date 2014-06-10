@@ -75,16 +75,16 @@ DATABASES = {
     # }
 }
 if 'TRAVIS' in os.environ:
-DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2',
-		'NAME': 'travisci',
-		'USER': 'postgres',
-		'PASSWORD': '',
-		'HOST': 'localhost',
-		'PORT': '',
-	}
-}
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'kitty',
+            'USER': 'postgres',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
