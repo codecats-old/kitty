@@ -17,8 +17,17 @@ class AccessTestCase(TestCase):
     def test_approve_authenticated(self):
         response = self.client.logout()
         self.client.login(username=self.user.username, password='abc')
-        response = self.client.get(reverse('frontsite:user', kwargs={'id':self.user.id}))
-        self.assertEquals(response.status_code, 200)
+
+        params = [
+            {'frontsite:user': [{'id': self.user.id}, 'get']},
+            {'frontsite:category': [{}, 'post']}
+        ]
+
+        for item in params:
+            url, kwargs = (item.keys()[0], item.values()[0])
+            method = getattr(self.client, kwargs[1] if len(kwargs) == 2 else 'get')
+            response = method(reverse(url, kwargs=kwargs[0]), follow=True)
+            self.assertEquals(response.status_code, 200)
 
     def test_denies_anonymous(self):
         self.client.logout()
