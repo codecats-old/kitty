@@ -97,15 +97,3 @@ SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
 )
-
-if 'TRAVIS' in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'kitty',
-            'USER': 'postgres',
-            'PASSWORD': '',
-            'HOST': 'localhost',
-            'PORT': '',
-        }
-    }
