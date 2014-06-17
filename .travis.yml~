@@ -15,7 +15,7 @@ before_script:
 # - pyflakes -x W src
   #- mysql -e 'create database mysite_db;'
   #- python manage.py syncdb --noinput
-  - psql -c "CREATE DATABASE travisdb;" -U postgres
+  - psql -c "CREATE DATABASE kitty;" -U postgres
 script:
   - python manage.py syncdb --noinput
   - python manage.py test

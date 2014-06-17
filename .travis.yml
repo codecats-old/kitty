@@ -8,6 +8,7 @@ env:
 install:
   - pip install -q Django==$DJANGO
   - pip install django-debug-toolbar
+  - pip install PIL --allow-external PIL --allow-unverified PIL
   - pip install -r requirements.txt
   #- python setup.py -q install
 before_script:
