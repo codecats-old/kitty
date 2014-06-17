@@ -20,12 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '_y%fv=nn_e=ow_or*#$$#JfDjfjx*2!#xjpz0gxgx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    '.kitty.td', # Allow domain and subdomains
+    '.kitty.td.', # Also allow FQDN and subdomains
+]
 
 # Application definition
 
@@ -69,7 +71,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl-pl'
 
 TIME_ZONE = 'UTC'
 
@@ -97,3 +99,15 @@ SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
 )
+
+if 'TRAVIS' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'kitty',
+            'USER': 'postgres',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
