@@ -1,0 +1,24 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    {% if chats %}
+        {% for chat in chats %}
+            <ul>
+                <li><a href="{% url 'chat:room' chat.id %}">{{ chat.name }}</a></li>
+            </ul>
+        {% endfor %}
+    {% else %}
+        Brak chatów.
+    {% endif %}
+
+    <script type="text/javascript" src="{% static 'chat/jquery-2.1.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chat/jquery-config.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chat/client.js' %}"></script>
+
+</body>
+</html>

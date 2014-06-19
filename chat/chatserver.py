@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #http://ferretfarmer.net/2013/09/05/tutorial-real-time-chat-with-django-twisted-and-websockets-part-2/
 '''
 #checkout the twisted project
@@ -10,17 +11,21 @@ git checkout websocket-4173-4
 
 #install it - preferably do this in a virtualenv
 python setup.py install
+
+
+
+#after install twistd -n -y chatserver.py
 '''
 from twisted.internet.protocol import connectionDone
 from twisted.protocols import basic
 from twisted.web.websockets import WebSocketsResource, WebSocketsProtocol, lookupProtocolForFactory
-
 
 class MyChat(basic.LineReceiver):
     def connectionMade(self):
         print 'got new client'
         self.transport.write('connected... \n')
         self.factory.clients.append(self)
+        self.factory.clients[0].message(u'ten ostatni śmierdzi')
 
     def connectionLost(self, reason=connectionDone):
         print 'Lost client!'
@@ -32,7 +37,7 @@ class MyChat(basic.LineReceiver):
             c.message(data)
 
     def message(self, message):
-        self.transport.write(message + '\n')
+        self.transport.write(message.encode('utf8') + '\n')
 
 from twisted.web.resource import Resource
 from twisted.web.server import Site
@@ -48,6 +53,6 @@ class ChatFactory(Factory):
 resource = WebSocketsResource(lookupProtocolForFactory(ChatFactory()))
 root = Resource()
 
-root.put('ws', resource)
+root.putChild('ws', resource)
 application = service.Application('chatserver')
 internet.TCPServer(1025, Site(root)).setServiceParent(application)
