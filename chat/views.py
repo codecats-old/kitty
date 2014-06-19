@@ -1,7 +1,8 @@
+import socket
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from chat.models import ChatRoom
-
+from django.contrib.sessions.backends.db import SessionStore
 
 def index(request):
     context = {
@@ -10,8 +11,13 @@ def index(request):
     return render(request, 'chat/index.html', context)
 
 def chat_room(request, chat_room_id):
+
+    session = SessionStore()
+    session['chat_user_id'] = request.user.id
+    session.save()
     context = {
-        'chat': get_object_or_404(ChatRoom, pk=chat_room_id)
+        'chat': get_object_or_404(ChatRoom, pk=chat_room_id),
+        'key' : request.session.session_key
     }
     return render(request, 'chat/chat_room.html', context)
 

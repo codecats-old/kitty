@@ -16,29 +16,69 @@ python setup.py install
 
 #after install twistd -n -y chatserver.py
 '''
+import json
+import datetime
+
+'''
+Add path to run django app
+'''
+import os
+import sys
+os.getcwd()
+path = os.path.join(os.getcwd(), '..')
+if path not in sys.path:
+    sys.path.append(path)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kitty.settings")
+
+
 from twisted.internet.protocol import connectionDone
 from twisted.protocols import basic
 from twisted.web.websockets import WebSocketsResource, WebSocketsProtocol, lookupProtocolForFactory
 from collections import deque
 
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import User
+from django.http import request
+from django.contrib.sessions.backends.db import SessionStore
+
 class MyChat(basic.LineReceiver):
     def connectionMade(self):
-        print 'got new client'
         self.transport.write('connected... \n')
         self.factory.clients.append(self)
-        print self.factory.messages
+        iterator = 0
         for message in self.factory.messages:
-            self.message(message)
+            self.message(self.factory.time[iterator] + message)
+            iterator += 1
 
     def connectionLost(self, reason=connectionDone):
         print 'Lost client!'
         self.factory.clients.remove(self)
 
     def dataReceived(self, data):
-        print 'received', repr(data)
-        self.factory.messages.append(data)
-        for c in self.factory.clients:
-            c.message(data)
+        try:
+            data = json.loads(data)
+        except:
+            pass
+
+        if 'key' in data:
+            try:
+                session = Session.objects.get(session_key=data['key'])
+                session_data = session.get_decoded()
+                uid = session_data.get('_auth_user_id')
+                user = User.objects.get(id=uid)
+                for c in self.factory.clients:
+                    c.message('joined: ' + str(user))
+            except:
+                pass
+
+        else:
+            print 'received', repr(data)
+            time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.factory.messages.append(data)
+            self.factory.authors.append(self)
+            self.factory.time.append(time)
+            for c in self.factory.clients:
+                c.message(time + ': ' + data)
 
     def message(self, message):
         self.transport.write(message + '\n')

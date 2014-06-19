@@ -1,8 +1,11 @@
 $(document).ready(function () {
-    var socket  = new WebSocket("ws://127.0.0.1:1025/ws"),
+
+    var socket  = new WebSocket('ws://' + window.location.hostname + ':1025/ws'),
         board   = $('#message_list'),
         input   = $('#send-text'),
         sendBtn = $('#send-button');
+
+
 
     sendBtn.bind('click', function(e) {
         var e = jQuery.Event('keypress');
@@ -17,6 +20,10 @@ $(document).ready(function () {
             me.val('');
         }
     });
+
+    socket.onopen = function () {
+        this.send(JSON.stringify({'key':$('[name=chat-key]').text()}));
+    };
 
     socket.onmessage = function (event) {
         board.append('<div class="message">' + event.data + '</div>');
