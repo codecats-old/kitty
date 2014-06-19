@@ -19,13 +19,16 @@ python setup.py install
 from twisted.internet.protocol import connectionDone
 from twisted.protocols import basic
 from twisted.web.websockets import WebSocketsResource, WebSocketsProtocol, lookupProtocolForFactory
+from collections import deque
 
 class MyChat(basic.LineReceiver):
     def connectionMade(self):
         print 'got new client'
         self.transport.write('connected... \n')
         self.factory.clients.append(self)
-        self.factory.clients[0].message(u'ten ostatni śmierdzi')
+        print self.factory.messages
+        for message in self.factory.messages:
+            self.message(message)
 
     def connectionLost(self, reason=connectionDone):
         print 'Lost client!'
@@ -33,11 +36,17 @@ class MyChat(basic.LineReceiver):
 
     def dataReceived(self, data):
         print 'received', repr(data)
+        self.factory.messages.append(data)
         for c in self.factory.clients:
             c.message(data)
 
     def message(self, message):
-        self.transport.write(message.encode('utf8') + '\n')
+        self.transport.write(message + '\n')
+    def messageUTF8(self, message):
+        '''
+        use it from server site when message is utf8
+        '''
+        self.message(message.encode('utf8'))
 
 from twisted.web.resource import Resource
 from twisted.web.server import Site
@@ -49,6 +58,9 @@ from twisted.internet.protocol import Factory
 class ChatFactory(Factory):
     protocol = MyChat
     clients = []
+    messages = deque(maxlen=20)
+    authors = deque(maxlen=20)
+    time = deque(maxlen=20)
 
 resource = WebSocketsResource(lookupProtocolForFactory(ChatFactory()))
 root = Resource()

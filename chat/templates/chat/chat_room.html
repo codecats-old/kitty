@@ -4,9 +4,17 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <link type="text/css" href="{% static 'chat/main.css' %}" rel="stylesheet" />
 </head>
 <body>
     <h1>{{ chat.name }}</h1>
-    <div id="message list"></div>
+    <div id="message_list"></div>
+    <div class="controls">
+        <input id="send-text" type="text" /><button id="send-button">Wyślij</button>
+    </div>
+
+    <script type="text/javascript" src="{% static 'chat/jquery-2.1.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chat/jquery-config.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chat/client.js' %}"></script>
 </body>
 </html>
