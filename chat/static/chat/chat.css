@@ -1,0 +1,32 @@
+.chat {
+    position: fixed;
+    top:20%;
+    left: -46%;
+    width: 50%;
+    height: 50%;
+}
+
+.message{ 
+    margin: 10px;
+}
+.msg{}
+.sender {
+    margin: 2px;
+    color: gray;
+    width: 50px;
+}
+.time{
+    font-size: .6em;
+    float: right;
+}
+
+#message_list, .users ul{
+    height: 250px;
+    overflow: auto;
+    border: 1px solid gainsboro;
+}
+
+.button-collapse{
+    top: 0px;
+    position: static;
+}

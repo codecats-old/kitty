@@ -12,6 +12,7 @@
             <link type="text/css" href="{% static 'frontsite/font-awesome-4.1.0/css/font-awesome.min.css' %}" rel="stylesheet" />
             <link type="text/css" href="{% static 'frontsite/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" />
             <link type="text/css" href="{% static 'frontsite/main.css' %}" rel="stylesheet" />
+            <link type="text/css" href="{% static 'chat/chat.css' %}" rel="stylesheet" />
         {% endblock %}
         {% block stylesheets-custom %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{% static 'frontsite/icon.jpeg' %}" />
@@ -93,6 +94,9 @@
     {% block content %}{% endblock %}
 {% endblock %}
 </section>
+<section id="chat" class="chat">
+        {% include "chat/chat.html" %}
+</section>
 {% block footer %}
 <footer>
 
@@ -102,6 +106,8 @@
     <script type="text/javascript" src="{% static 'frontsite/jquery-2.1.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'frontsite/bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'frontsite/jquery-config.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chat/chat.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chat/client.js' %}"></script>
 {% endblock %}
 {% block javascript-custom %}{% endblock %}
     </body>

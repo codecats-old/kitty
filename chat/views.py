@@ -11,13 +11,8 @@ def index(request):
     return render(request, 'chat/index.html', context)
 
 def chat_room(request, chat_room_id):
-
-    session = SessionStore()
-    session['chat_user_id'] = request.user.id
-    session.save()
     context = {
-        'chat': get_object_or_404(ChatRoom, pk=chat_room_id),
-        'key' : request.session.session_key
+        'chat': get_object_or_404(ChatRoom, pk=chat_room_id)
     }
     return render(request, 'chat/chat_room.html', context)
 

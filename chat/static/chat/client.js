@@ -27,23 +27,33 @@ $(document).ready(function () {
 
     socket.onmessage = function (event) {
         var data = JSON.parse(event.data);
-        console.log(data);
         if (typeof data['all_clients'] !== 'undefined') {
             var ul = $('.users ul');
             for (var client in data['all_clients']) {
                 var user = data['all_clients'][client];
-                ul.append('<li data-chat="' + user + '">' + user + '</li>');
+                if ( ! $('[data-chat=' + user + ']').length) {
+                    ul.append('<li data-chat="' + user + '">' + user + '</li>');
+                }
             }
         } else if (typeof data['connection_status'] !== 'undefined') {
             $('#connection_status').html('connected...');
         } else if (typeof data['username_changed'] !== 'undefined') {
-            
+            var li = $('[data-chat=' + data['username_changed'].old + ']');
+            li.html(data['username_changed'].new);
+            li.attr('data-chat', data['username_changed'].new);
+          
+        } else if (typeof data['client_lost'] !== 'undefined') {
+            $('[data-chat=' + data['client_lost'] + ']').remove();
         } else {
-            
             board.append(
-                    '<div class="message">' + data.msg + 
-                    '<span>' + data.time + '</span>' + 
-                    '</div>');
+                    '<div class="message well">' + 
+                    '<span class="sender">' + data.sender + '</span>' + 
+                    '<span class="msg">' + data.msg + '</span>' + 
+                    '<span class="time">' + data.time + '</span>' + 
+                    '</div>'
+            );
+            var height = board[0].scrollHeight;
+            board.scrollTop(height);
         }
     };
 });

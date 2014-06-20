@@ -1,0 +1,28 @@
+{% load staticfiles %}
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+    <head>
+
+        {% block stylesheets %}
+            <link type="text/css" href="{% static 'chat/main.css' %}" rel="stylesheet" />
+        {% endblock %}
+        {% block stylesheets-custom %}{% endblock %}
+    </head>
+<body>
+{% block body %}
+
+{% endblock %}
+ </body>
+{% block footer %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="{% static 'chat/jquery-2.1.1.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'chat/jquery-config.js' %}"></script>
+<script type="text/javascript" src="{% static 'chat/client.js' %}"></script>
+{% endblock %}
+{% block javascript-custom %}{% endblock %}
+
+</html>

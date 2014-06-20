@@ -37,21 +37,22 @@ from twisted.web.websockets import WebSocketsResource, WebSocketsProtocol, looku
 from collections import deque
 
 from django.contrib.sessions.models import Session
-from django.contrib.auth.models import User
+from django.contrib.auth import models
 from django.http import request
 from django.contrib.sessions.backends.db import SessionStore
 
 class MyChat(basic.LineReceiver):
-    DEFAULT_USERNAME = 'guest'
+
     def connectionMade(self):
-        self.username = self.DEFAULT_USERNAME + str(len(self.factory.clients))
+        self.username = User().get_unique_name(self.factory.clients)
         self.factory.clients.append(self)
-        Messenger().connected_message(self)
+        messenger = Messenger()
+        messenger.connected_message(self)
         iterator = 0
         for message in self.factory.messages:
-            Messenger().message(self, self.factory.authors[iterator], message, self.factory.time[iterator])
+            messenger.message(self, self.factory.authors[iterator], message, self.factory.time[iterator])
             iterator += 1
-        Messenger().send_users(self.factory.clients)
+        messenger.send_users(self.factory.clients)
 
     def connectionLost(self, reason=connectionDone):
         print 'Lost client!'
@@ -69,12 +70,10 @@ class MyChat(basic.LineReceiver):
                 session = Session.objects.get(session_key=data['key'])
                 session_data = session.get_decoded()
                 uid = session_data.get('_auth_user_id')
-                user = User.objects.get(id=uid)
+                user = models.User.objects.get(id=uid)
                 username = self.username
                 self.username = str(user)
                 Messenger().changed_username(self.factory.clients, self.username, username)
-                # for c in self.factory.clients:
-                #     c.message('joined: ' + str(user))
             except:
                 pass
 
@@ -85,8 +84,6 @@ class MyChat(basic.LineReceiver):
             self.factory.authors.append(self)
             self.factory.time.append(time)
             Messenger().to_all(self.factory.clients, self, data)
-            # for c in self.factory.clients:
-            #     c.message(time + ', ' + self.username + ': ' + data)
 
     def message(self, message):
         self.transport.write(message + '\n')
@@ -139,6 +136,20 @@ class Messenger(object):
 
     def connected_message(self, user):
         user.message(json.dumps({'connection_status': True}))
+
+class User(object):
+    DEFAULT_USERNAME = 'guest'
+    def get_unique_name(self, clients):
+        id = 1
+        while True:
+            unique = True
+            name = self.DEFAULT_USERNAME + str(id)
+            for c in clients:
+                if name == c.username:
+                    unique = False
+            if unique == True:
+                return name
+            id += 1
 
 
 resource = WebSocketsResource(lookupProtocolForFactory(ChatFactory()))

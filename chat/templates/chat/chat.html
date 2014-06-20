@@ -1,0 +1,33 @@
+{% load staticfiles %}
+
+<div class="row well">
+    <div class="col-md-8">
+        <h4>{{ chat.name }}</h4>
+        <h5>{{ request.user }}</h5>
+        <h6 id="connection_status"></h6>
+        <div id="message_list"></div>
+        <div class="controls row">
+            <div class="col-md-8">
+                <input class="form-control" id="send-text" type="text" />
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-info" id="send-button">Wyślij <i class="fa fa-send"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div clas="col-md-4">
+        <div class="users">
+            <ul class="list-unstyled ">
+
+            </ul>
+
+        </div>
+        <div class="button-collapse pull-right"><button class="btn fa fa-angle-double-right"></button></div>
+        <div class="pull-right"><button class="btn fa fa-music"></button></div>
+        <audio src="{% static 'chat/sound.mp3' %}"></audio>
+    </div>
+</div>
+
+
+<div name="chat-key" style="display:none">{{ request.session.session_key }}</div>
