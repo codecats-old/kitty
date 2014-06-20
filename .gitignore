@@ -1,2 +1,3 @@
 .idea/*
 *.py[co]
+/chat/static/chat/nbproject/private/

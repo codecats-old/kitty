@@ -42,16 +42,20 @@ from django.http import request
 from django.contrib.sessions.backends.db import SessionStore
 
 class MyChat(basic.LineReceiver):
+    DEFAULT_USERNAME = 'guest'
     def connectionMade(self):
-        self.transport.write('connected... \n')
+        self.username = self.DEFAULT_USERNAME + str(len(self.factory.clients))
         self.factory.clients.append(self)
+        Messenger().connected_message(self)
         iterator = 0
         for message in self.factory.messages:
-            self.message(self.factory.time[iterator] + message)
+            Messenger().message(self, self.factory.authors[iterator], message, self.factory.time[iterator])
             iterator += 1
+        Messenger().send_users(self.factory.clients)
 
     def connectionLost(self, reason=connectionDone):
         print 'Lost client!'
+        Messenger().send_lost_user(self.factory.clients, self)
         self.factory.clients.remove(self)
 
     def dataReceived(self, data):
@@ -59,15 +63,18 @@ class MyChat(basic.LineReceiver):
             data = json.loads(data)
         except:
             pass
-
+        print data
         if 'key' in data:
             try:
                 session = Session.objects.get(session_key=data['key'])
                 session_data = session.get_decoded()
                 uid = session_data.get('_auth_user_id')
                 user = User.objects.get(id=uid)
-                for c in self.factory.clients:
-                    c.message('joined: ' + str(user))
+                username = self.username
+                self.username = str(user)
+                Messenger().changed_username(self.factory.clients, self.username, username)
+                # for c in self.factory.clients:
+                #     c.message('joined: ' + str(user))
             except:
                 pass
 
@@ -77,8 +84,9 @@ class MyChat(basic.LineReceiver):
             self.factory.messages.append(data)
             self.factory.authors.append(self)
             self.factory.time.append(time)
-            for c in self.factory.clients:
-                c.message(time + ': ' + data)
+            Messenger().to_all(self.factory.clients, self, data)
+            # for c in self.factory.clients:
+            #     c.message(time + ', ' + self.username + ': ' + data)
 
     def message(self, message):
         self.transport.write(message + '\n')
@@ -101,6 +109,37 @@ class ChatFactory(Factory):
     messages = deque(maxlen=20)
     authors = deque(maxlen=20)
     time = deque(maxlen=20)
+
+class Messenger(object):
+    def to_all(self, clients, sender, message, time=None):
+        if not time:
+            time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        for c in clients:
+            self.message(c, sender, message, time)
+
+    def message(self, receiver, sender, message, time):
+        pack = json.dumps({'msg': message, 'time': time, 'sender': sender.username, 'receiver': receiver.username})
+        receiver.message(pack)
+
+    def send_users(self, clients, users=None):
+        if not users:
+            users = clients
+        all_clients = json.dumps({'all_clients': [user.username for user in users]})
+        self.propagate(clients, all_clients)
+
+    def send_lost_user(self, clients, user):
+        self.propagate(clients, json.dumps({'client_lost': user.username}))
+
+    def changed_username(self, clients, new_username, old_username):
+        self.propagate(clients, json.dumps({'username_changed':{'new': new_username, 'old': old_username}}))
+
+    def propagate(self, clients, message):
+        for c in clients:
+            c.message(message)
+
+    def connected_message(self, user):
+        user.message(json.dumps({'connection_status': True}))
+
 
 resource = WebSocketsResource(lookupProtocolForFactory(ChatFactory()))
 root = Resource()

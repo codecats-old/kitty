@@ -8,9 +8,16 @@
 </head>
 <body>
     <h1>{{ chat.name }}</h1>
+    <h2>{{ request.user }}</h2>
+    <h3 id="connection_status"></h3>
     <div id="message_list"></div>
     <div class="controls">
         <input id="send-text" type="text" /><button id="send-button">Wyślij</button>
+    </div>
+    <div class="users">
+        <ul>
+
+        </ul>
     </div>
     <div name="chat-key" style="display:none">{{ key }}</div>
 

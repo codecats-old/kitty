@@ -26,7 +26,24 @@ $(document).ready(function () {
     };
 
     socket.onmessage = function (event) {
-        board.append('<div class="message">' + event.data + '</div>');
-        console.log(event.data);
+        var data = JSON.parse(event.data);
+        console.log(data);
+        if (typeof data['all_clients'] !== 'undefined') {
+            var ul = $('.users ul');
+            for (var client in data['all_clients']) {
+                var user = data['all_clients'][client];
+                ul.append('<li data-chat="' + user + '">' + user + '</li>');
+            }
+        } else if (typeof data['connection_status'] !== 'undefined') {
+            $('#connection_status').html('connected...');
+        } else if (typeof data['username_changed'] !== 'undefined') {
+            
+        } else {
+            
+            board.append(
+                    '<div class="message">' + data.msg + 
+                    '<span>' + data.time + '</span>' + 
+                    '</div>');
+        }
     };
 });
