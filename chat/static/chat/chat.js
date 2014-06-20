@@ -6,11 +6,12 @@
 
 var collapseBtn = $('.button-collapse button'),
     chatPanel   = $('.chat'),
-    toLeft      = localStorage.getItem('toLeft');
+    toLeft      = localStorage.getItem('toLeft'),
+    soundBtn    = $('#sound-button'),
+    useSound    = JSON.parse(localStorage.getItem('useSound'));
 
 if (toLeft !== null) {
     toLeft = JSON.parse(toLeft);
-    console.log(toLeft)
     chatPanel.css({'left': (toLeft) ? "0%" : "-46%"});
     if (toLeft) {
         collapseBtn.removeClass('fa-angle-double-right');
@@ -19,6 +20,12 @@ if (toLeft !== null) {
         collapseBtn.removeClass('fa-angle-double-left');
         collapseBtn.addClass('fa-angle-double-right');
     }
+}
+
+if (useSound === false) {
+    soundBtn.addClass('fa-microphone-slash');
+} else {
+    soundBtn.removeClass('fa-microphone-slash');
 }
 
 collapseBtn.bind('click', function(e) {
@@ -34,8 +41,17 @@ collapseBtn.bind('click', function(e) {
             collapseBtn.removeClass('fa-angle-double-left');
             collapseBtn.addClass('fa-angle-double-right');
         }
-        console.log(toLeft)
         localStorage.setItem('toLeft', toLeft);
-        console.log(localStorage.getItem('toLeft'));
     });
+});
+
+soundBtn.bind('click', function(e) {
+    useSound = ! useSound;
+    localStorage.setItem('useSound', useSound);
+    
+    if (useSound === false) {
+        soundBtn.addClass('fa-microphone-slash');
+    } else {
+        soundBtn.removeClass('fa-microphone-slash');
+    }
 });

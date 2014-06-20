@@ -16,8 +16,11 @@
     width: 50px;
 }
 .time{
-    font-size: .6em;
+    font-size: .8em;
     float: right;
+}
+.author{
+    color:red;
 }
 
 #message_list, .users ul{

@@ -2,10 +2,17 @@
 
 <div class="row well">
     <div class="col-md-8">
-        <h4>{{ chat.name }}</h4>
-        <h5>{{ request.user }}</h5>
-        <h6 id="connection_status"></h6>
-        <div id="message_list"></div>
+        {#<h4>{{ chat.name }}</h4>#}
+
+
+        <ul id="chat-tabs" class="nav nav-tabs">
+            <li class="active"><a href="#main-chat" data-toggle="tab">Czat</a></li>
+        </ul>
+        <div id="chat-panel" class="tab-content">
+            <div class="tab-pane fade in active" id="main-chat">
+                <div id="message_list"></div>
+            </div>
+        </div>
         <div class="controls row">
             <div class="col-md-8">
                 <input class="form-control" id="send-text" type="text" />
@@ -21,10 +28,11 @@
             <ul class="list-unstyled ">
 
             </ul>
-
         </div>
         <div class="button-collapse pull-right"><button class="btn fa fa-angle-double-right"></button></div>
-        <div class="pull-right"><button class="btn fa fa-music"></button></div>
+        <div class="pull-right"><button id="sound-button" class="btn fa fa-music"></button></div>
+        <h5 id="author">{{ request.user }}</h5>
+        <h6 id="connection_status"></h6>
         <audio src="{% static 'chat/sound.mp3' %}"></audio>
     </div>
 </div>

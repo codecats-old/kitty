@@ -40,6 +40,7 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth import models
 from django.http import request
 from django.contrib.sessions.backends.db import SessionStore
+from cgi import escape
 
 class MyChat(basic.LineReceiver):
 
@@ -115,8 +116,14 @@ class Messenger(object):
             self.message(c, sender, message, time)
 
     def message(self, receiver, sender, message, time):
-        pack = json.dumps({'msg': message, 'time': time, 'sender': sender.username, 'receiver': receiver.username})
-        receiver.message(pack)
+        if message:
+            pack = json.dumps({
+                'msg': escape(message),
+                'time': time,
+                'sender': sender.username,
+                'receiver': receiver.username
+            })
+            receiver.message(pack)
 
     def send_users(self, clients, users=None):
         if not users:
@@ -135,7 +142,7 @@ class Messenger(object):
             c.message(message)
 
     def connected_message(self, user):
-        user.message(json.dumps({'connection_status': True}))
+        user.message(json.dumps({'connection_status': True, 'you': user.username}))
 
 class User(object):
     DEFAULT_USERNAME = 'guest'
