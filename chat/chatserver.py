@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
-#http://ferretfarmer.net/2013/09/05/tutorial-real-time-chat-with-django-twisted-and-websockets-part-2/
+
 '''
+Here is basic explanation:
+http://ferretfarmer.net/2013/09/05/tutorial-real-time-chat-with-django-twisted-and-websockets-part-2/
+
+Installation:
 #checkout the twisted project
 git clone https://github.com/twisted/twisted.git twisted-websocket
 
@@ -16,62 +20,78 @@ python setup.py install
 
 #after install twistd -n -y chatserver.py
 '''
-import json
-import datetime
-
-'''
-Add path to run django app
-'''
 import os
+from random import randint
 import sys
 os.getcwd()
 path = os.path.join(os.getcwd(), '..')
+# Add path to run django app this action has to be done before import django libs
 if path not in sys.path:
     sys.path.append(path)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kitty.settings")
-
-
+import json
+import datetime
 from twisted.internet.protocol import connectionDone
 from twisted.protocols import basic
 from twisted.web.websockets import WebSocketsResource, WebSocketsProtocol, lookupProtocolForFactory
 from collections import deque
-
 from django.contrib.sessions.models import Session
 from django.contrib.auth import models
-from django.http import request
-from django.contrib.sessions.backends.db import SessionStore
 from cgi import escape
+from twisted.web.resource import Resource
+from twisted.web.server import Site
+from twisted.internet import protocol
+from twisted.application import service, internet
+from twisted.internet.protocol import Factory
+
 
 class MyChat(basic.LineReceiver):
+    '''Class controls messages propagation via Messenger class helper. Data can be send to all users or single user.
+    User is identified by his username, each username should be unique. Class can receive and send message from / to
+    specific user in real time. Chat data (messages) is stored inside Chat factory'''
 
     def connectionMade(self):
-        self.username = User().get_unique_name(self.factory.clients)
+        '''On connection we give username for connected client. Creator for unique username is inside User class,
+        after that welcome message is sended to connected client and lasted chat messages
+        '''
+        self.username = User().get_unique_name(self.factory.clients, random=True)
         self.factory.clients.append(self)
         messenger = Messenger()
+        #send welcome message
         messenger.connected_message(self)
+        #show stored discussion in the factory class
         iterator = 0
         for message in self.factory.messages:
             messenger.message(self, self.factory.authors[iterator], message, self.factory.time[iterator])
             iterator += 1
+        #send all available users to connected clients
         messenger.send_users(self.factory.clients)
 
     def connectionLost(self, reason=connectionDone):
+        '''When client is disconnected just send information about this user to other connected clients and then
+        remove client from factory'''
         print 'Lost client!'
         Messenger().send_lost_user(self.factory.clients, self)
         self.factory.clients.remove(self)
 
     def dataReceived(self, data):
+        '''Receiving data from clients and decide what action have to be done, messenger object has the delegator role.
+        The object do delegated actions on passed data to his methods'''
         messenger = Messenger()
+        #if data is not json send it to client as message
         try:
             data = json.loads(data)
         except:
             pass
         print data
+        #if json has 'key' this means to look for the user in django's ORM
         if 'key' in data:
             username = self.username
+            #if session key is invalid or user cant be found dont change the name
             try:
                 user = User()
                 self.username = user.get_user_by_session(data['key'])
+                #tell about changed username to all connected clients, append new and the old username
                 messenger.changed_username(self.factory.clients, self.username, username)
             except:
                 pass
@@ -82,24 +102,20 @@ class MyChat(basic.LineReceiver):
             self.factory.messages.append(data)
             self.factory.authors.append(self)
             self.factory.time.append(messenger.get_time())
+            #propagate the message to all
             messenger.to_all(self.factory.clients, self, data)
 
     def message(self, message):
+        '''Transport from client to another should be done via this method'''
         self.transport.write(message + '\n')
     def messageUTF8(self, message):
-        '''
-        use it from server site when message is utf8
-        '''
+        '''Use it from server site when message is utf8. For example server has to send some message with utf-8
+        characters, this message should be passed by this method'''
         self.message(message.encode('utf8'))
 
-from twisted.web.resource import Resource
-from twisted.web.server import Site
-from twisted.internet import protocol
-from twisted.application import service, internet
-
-from twisted.internet.protocol import Factory
 
 class ChatFactory(Factory):
+    '''Factory - container for stored data, lastest messages are stored with limited size container.'''
     protocol = MyChat
     clients = []
     messages = deque(maxlen=20)
@@ -107,16 +123,21 @@ class ChatFactory(Factory):
     time = deque(maxlen=20)
 
 class Messenger(object):
+    '''This class helps to do the action on clients. Class contains method for standard output data. Data usually
+    formated by JSON '''
     def get_time(self):
+        '''Every message has time with the same format'''
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def to_all(self, clients, sender, message, time=None):
+        '''Message sends to all clients list passed to the method'''
         if not time:
             time = self.get_time()
         for c in clients:
             self.message(c, sender, message, time)
 
     def message(self, receiver, sender, message, time):
+        '''Standard formatted message, empty text is ommited, HTML tags are escaped.'''
         if message:
             pack = json.dumps({
                 'msg': escape(message),
@@ -127,66 +148,91 @@ class Messenger(object):
             receiver.message(pack)
 
     def send_users(self, clients, users=None):
+        '''Sends username to given clients list, if users is none method sends list of clients to each client'''
         if not users:
             users = clients
         all_clients = json.dumps({'all_clients': [user.username for user in users]})
         self.propagate(clients, all_clients)
 
     def send_lost_user(self, clients, user):
+        '''Send information about disconnected client. Data is JSON formatted'''
         self.propagate(clients, json.dumps({'client_lost': user.username}))
 
     def changed_username(self, clients, new_username, old_username):
+        '''Send information about username changed to given clients list. Data in JSON contains information about
+        new and name before change'''
         self.propagate(clients, json.dumps({'username_changed':{'new': new_username, 'old': old_username}}))
 
     def propagate(self, clients, message):
+        '''Send string message to given clients list'''
         for c in clients:
             c.message(message)
 
     def connected_message(self, user):
+        '''Connection message to user'''
         user.message(json.dumps({'connection_status': True, 'you': user.username}))
 
     def private_message(self, clients, receiver, sender, msg):
+        '''Send private message to receiver and sender username (sending for sender can be useful for delivery).
+        Message can not be send if client close the connection'''
         pack = json.dumps({
-            'prvMsg': msg,
+            'prvMsg': escape(msg),
             'time': self.get_time(),
             'sender': sender,
             'receiver': receiver
         })
         receiverUser = self.find_user_by_name(clients, receiver)
         senderUser = self.find_user_by_name(clients, sender)
-        senderUser.message(pack)
-        receiverUser.message(pack)
+        if senderUser:
+            senderUser.message(pack)
+        if receiverUser:
+            receiverUser.message(pack)
 
     def find_user_by_name(self, clients, username):
+        '''Find username in clients list, if username not exists method return none'''
         for c in clients:
             if c.username == username:
                 return c
         return None
 
 class User(object):
+    '''Class organize unique usernames or / and read username from django logged in username'''
+
+    #base username
     DEFAULT_USERNAME = 'guest'
-    def get_unique_name(self, clients):
-        id = 1
+    def get_unique_name(self, clients, random=False):
+        '''Methods adds unique number to base username, if random is set then starting id
+        will be random unsigned integer'''
+        id = 1 if random is False else randint(1, 1000)
+
         while True:
-            unique = True
+            #username to try
             name = self.DEFAULT_USERNAME + str(id)
-            for c in clients:
-                if name == c.username:
-                    unique = False
-            if unique == True:
+            #if username not exists in connected clients return unique username, else increment id and check again
+            if self.is_unique_name(clients, name):
                 return name
             id += 1
+
+    def is_unique_name(self, clients, name):
+        '''Check username in clients list, if unique return True else return False'''
+        for c in clients:
+            if name == c.username:
+                return False
+        return True
+
     def get_user_by_session(self, key):
+        '''Reads current logged in user in Django session, if such data not found error will be raised'''
         session = Session.objects.get(session_key=key)
         session_data = session.get_decoded()
         uid = session_data.get('_auth_user_id')
         user = models.User.objects.get(id=uid)
         return str(user)
 
-
+#initialize and run websocket
 resource = WebSocketsResource(lookupProtocolForFactory(ChatFactory()))
 root = Resource()
 
 root.putChild('ws', resource)
 application = service.Application('chatserver')
+#start server on 1025 port
 internet.TCPServer(1025, Site(root)).setServiceParent(application)
