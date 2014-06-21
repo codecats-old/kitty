@@ -73,7 +73,19 @@ $(document).ready(function () {
                 }
             });
         };
+        function parseEmoticons (msg) {
+            var bin = {
+                ':)': '<img src="/static/chat/emoticon/Smile.png"/>',
+                '*smile*': '<img src="/static/chat/emoticon/Smile.png"/>',
+                ':*': '<img src="/static/chat/emoticon/Kiss.png"/>'
 
+            };
+            for (var i in bin) {
+                msg = msg.split(i).join(bin[i]);
+            }
+            return msg;
+        };
+        
         sendBtn.unbind('click');
         sendBtn.bind('click', function(e) {
             var e = jQuery.Event('keypress');
@@ -138,7 +150,7 @@ $(document).ready(function () {
                             '<span class="sender ' + classAuthor + '">' + 
                             '<button name="user">' + data.sender + '</button>' + 
                             '</span>' + 
-                            '<span class="msg">' + data.prvMsg + '</span>' + 
+                            '<span class="msg">' + parseEmoticons(data.prvMsg) + '</span>' + 
                             '<span class="time">' + data.time + '</span>' + 
                             '</div>'
                         );
@@ -153,7 +165,7 @@ $(document).ready(function () {
                             '<span class="sender ">' + 
                             '<button name="user">' + data.sender + '</button>' + 
                             '</span>' + 
-                            '<span class="msg">' + data.prvMsg + '</span>' + 
+                            '<span class="msg">' + parseEmoticons(data.prvMsg) + '</span>' + 
                             '<span class="time">' + data.time + '</span>' + 
                             '</div>'
                         );
@@ -182,7 +194,7 @@ $(document).ready(function () {
                         '<span class="sender ' + classAuthor + '">' + 
                         '<button name="user">' + data.sender + '</button>' + 
                         '</span>' + 
-                        '<span class="msg">' + data.msg + '</span>' + 
+                        '<span class="msg">' + parseEmoticons(data.msg) + '</span>' + 
                         '<span class="time">' + data.time + '</span>' + 
                         '</div>'
                 );
