@@ -20,54 +20,57 @@ $(document).ready(function () {
             $('[name=user]').unbind('click');
             $('[name=user]').bind('click', function () {
                 var userName = $(this).html();
-                $('#chat-tabs').append(
-                    '<li><a href="#' + userName + '" data-toggle="tab">' + 
-                    userName +
-                    '<button data="' + userName + '" name="close-tab" class="btn btn-xs btn-danger btn-close pull-right">x</button>' +
-                    '</a></li>'
-                );
-                var panelTemplate = '<div class="message-list" id="message_list' + userName + '"></div>' +
-                '<div class="controls row">' +
-                    '<div class="col-md-8">' +
-                        '<input class="form-control" id="send-text' + 
-                        userName + '" type="text" user="' + userName + '" />' +
-                    '</div>' +
-                    '<div class="col-md-4">' +
-                        '<button class="btn btn-info" id="send-button' + userName + '">Wyślij <i class="fa fa-send"></i></button>' +
-                    '</div>' +
-                '</div>';
-                $('#chat-panel').append(
-                    '<div class="tab-pane fade" id="' + userName + '">' + panelTemplate + '</div>'
-                );
-                $('[name=close-tab]').bind('click', function() {
-                    var userName = $(this).attr('data');
-                    $('div#' + userName).remove();
-                    $('[data=' + userName + ']').closest('li').remove();
-                });
-                
-                var inputUser   = $('#send-text' + userName),
-                    sendBtnUser = $('#send-button' + userName);
-                    
-                sendBtnUser.unbind('click');
-                sendBtnUser.bind('click', function(e) {
-                    var e = jQuery.Event('keypress');
-                    e.which = 13;
-                    inputUser.trigger(e);
-                });
-                inputUser.unbind('keypress');
-                inputUser.bind('keypress', function(e) {
-                    var code = e.keyCode || e.which;
-                    if (code == 13) { //Enter keycode
-                        var me  = $(this),
-                            msg = JSON.stringify({
-                                'prvMsg':me.val(),
-                                'receiver': $(this).attr('user')
-                            });
-                        console.log(msg);
-                        socket.send(msg);
-                        me.val('');
-                    }
-                });
+                if ($('#message_list' + userName).length === 0 && userName !== $('#author').html()) {
+                    $('#chat-tabs').append(
+                        '<li name ="' + userName + '">' + 
+                        '<a href="#' + userName + '" data-toggle="tab">' + 
+                        userName +
+                        '<button data="' + userName + '" name="close-tab" class="btn btn-xs btn-danger btn-close pull-right">x</button>' +
+                        '</a>' + 
+                        '</li>'
+                    );
+                    var panelTemplate = '<div class="message-list" id="message_list' + userName + '"></div>' +
+                    '<div class="controls row">' +
+                        '<div class="col-md-8">' +
+                            '<input class="form-control" id="send-text' + 
+                            userName + '" type="text" user="' + userName + '" />' +
+                        '</div>' +
+                        '<div class="col-md-4">' +
+                            '<button class="btn btn-info" id="send-button' + userName + '">Wyślij <i class="fa fa-send"></i></button>' +
+                        '</div>' +
+                    '</div>';
+                    $('#chat-panel').append(
+                        '<div class="tab-pane fade" id="' + userName + '">' + panelTemplate + '</div>'
+                    );
+                    $('[name=close-tab]').bind('click', function() {
+                        var userName = $(this).attr('data');
+                        $('div#' + userName).remove();
+                        $('[data=' + userName + ']').closest('li').remove();
+                    });
+
+                    var inputUser   = $('#send-text' + userName),
+                        sendBtnUser = $('#send-button' + userName);
+
+                    sendBtnUser.unbind('click');
+                    sendBtnUser.bind('click', function(e) {
+                        var e = jQuery.Event('keypress');
+                        e.which = 13;
+                        inputUser.trigger(e);
+                    });
+                    inputUser.unbind('keypress');
+                    inputUser.bind('keypress', function(e) {
+                        var code = e.keyCode || e.which;
+                        if (code == 13) { //Enter keycode
+                            var me  = $(this),
+                                msg = JSON.stringify({
+                                    'prvMsg':me.val(),
+                                    'receiver': $(this).attr('user')
+                                });
+                            socket.send(msg);
+                            me.val('');
+                        }
+                    });
+                }
             });
         };
 
@@ -121,7 +124,57 @@ $(document).ready(function () {
 
             } else if (typeof data['client_lost'] !== 'undefined') {
                 $('[data-chat=' + data['client_lost'] + ']').remove();
-            } else {
+            } else if (typeof data['prvMsg'] !== 'undefined') {
+                var author = $('#author').html();
+                $('.users [name=user]').each(function () {
+                    var me = $(this);
+                    if (me.html() === data.receiver && data.sender === author) {
+                        me.trigger('click');
+                        var boardUser = $('#message_list' + data.receiver);
+                        
+                        var classAuthor = 'author';
+                        boardUser.append(
+                            '<div class="message well">' + 
+                            '<span class="sender ' + classAuthor + '">' + 
+                            '<button name="user">' + data.sender + '</button>' + 
+                            '</span>' + 
+                            '<span class="msg">' + data.prvMsg + '</span>' + 
+                            '<span class="time">' + data.time + '</span>' + 
+                            '</div>'
+                        );
+                        var height = boardUser[0].scrollHeight;
+                        boardUser.scrollTop(height);
+                    } else if (me.html() === data.sender && data.sender !== author) {
+                        me.trigger('click');
+                        var boardUser = $('#message_list' + data.sender);
+                        
+                        boardUser.append(
+                            '<div class="message well">' + 
+                            '<span class="sender ">' + 
+                            '<button name="user">' + data.sender + '</button>' + 
+                            '</span>' + 
+                            '<span class="msg">' + data.prvMsg + '</span>' + 
+                            '<span class="time">' + data.time + '</span>' + 
+                            '</div>'
+                        );
+                        var height = boardUser[0].scrollHeight,
+                            useSound = JSON.parse(localStorage.getItem('useSound')),
+                            tab = $('#chat-tabs [name=' + data.sender + ']');
+                        if ( ! tab.hasClass('active')) {
+                            tab.addClass('new-msg');
+                            tab.unbind('click');
+                            tab.bind('click', function() {
+                                $(this).removeClass('new-msg');
+                            });
+                        }
+                        boardUser.scrollTop(height);
+                        if (useSound !== false) {
+                            audio.play();
+                        }
+                    }
+                });
+                
+            }else {
                 var classAuthor = (data.receiver === data.sender) ? 'author' : '';
 
                 board.append(

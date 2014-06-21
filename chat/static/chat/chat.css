@@ -4,6 +4,10 @@
     left: -46%;
     width: 50%;
     height: 50%;
+    
+-webkit-box-shadow: 3px 3px 25px 0px rgba(50, 50, 50, 0.75);
+-moz-box-shadow:    3px 3px 25px 0px rgba(50, 50, 50, 0.75);
+box-shadow:         3px 3px 25px 0px rgba(50, 50, 50, 0.75);
 }
 
 .message{ 
@@ -37,3 +41,23 @@
     margin-left: 5px;
     border-radius: 100%;
 }
+.new-msg{
+   background-color: orangered;
+   -webkit-animation: bgBlink 5s infinite; /* Chrome, Safari, Opera */
+   animation: bgBlink 5s infinite;
+
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes bgBlink {
+    0% {background: orange;}
+    50% {background: white;}
+    100% {background: orange;}
+}
+
+/* Standard syntax */
+@keyframes bgBlink {
+    0% {background: orange;}
+    50% {background: white;}
+    100% {background: orange;}
+} 

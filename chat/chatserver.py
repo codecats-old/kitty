@@ -79,10 +79,9 @@ class MyChat(basic.LineReceiver):
             messenger.private_message(self.factory.clients, data['receiver'], self.username, data['prvMsg'])
         else:
             print 'received', repr(data)
-            time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.factory.messages.append(data)
             self.factory.authors.append(self)
-            self.factory.time.append(time)
+            self.factory.time.append(messenger.get_time())
             messenger.to_all(self.factory.clients, self, data)
 
     def message(self, message):
@@ -108,9 +107,12 @@ class ChatFactory(Factory):
     time = deque(maxlen=20)
 
 class Messenger(object):
+    def get_time(self):
+        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     def to_all(self, clients, sender, message, time=None):
         if not time:
-            time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            time = self.get_time()
         for c in clients:
             self.message(c, sender, message, time)
 
@@ -144,7 +146,22 @@ class Messenger(object):
         user.message(json.dumps({'connection_status': True, 'you': user.username}))
 
     def private_message(self, clients, receiver, sender, msg):
-        print msg
+        pack = json.dumps({
+            'prvMsg': msg,
+            'time': self.get_time(),
+            'sender': sender,
+            'receiver': receiver
+        })
+        receiverUser = self.find_user_by_name(clients, receiver)
+        senderUser = self.find_user_by_name(clients, sender)
+        senderUser.message(pack)
+        receiverUser.message(pack)
+
+    def find_user_by_name(self, clients, username):
+        for c in clients:
+            if c.username == username:
+                return c
+        return None
 
 class User(object):
     DEFAULT_USERNAME = 'guest'
