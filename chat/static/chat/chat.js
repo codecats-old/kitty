@@ -33,7 +33,7 @@ collapseBtn.bind('click', function(e) {
 
     chatPanel.animate({
         left: (toLeft) ? "0%" : "-46%",
-    }, 2000, function() {
+    }, 1000, function() {
         if (toLeft) {
             collapseBtn.removeClass('fa-angle-double-right');
             collapseBtn.addClass('fa-angle-double-left');

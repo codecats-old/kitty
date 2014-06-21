@@ -10,17 +10,25 @@
         </ul>
         <div id="chat-panel" class="tab-content">
             <div class="tab-pane fade in active" id="main-chat">
-                <div id="message_list"></div>
+                <div class="message-list" id="message_list"></div>
+                <div class="controls row">
+                    <div class="col-md-8">
+                        <input class="form-control" id="send-text" type="text" />
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-info" id="send-button">Wyślij <i class="fa fa-send"></i></button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="controls row">
+        <!--<div class="controls row">
             <div class="col-md-8">
                 <input class="form-control" id="send-text" type="text" />
             </div>
             <div class="col-md-4">
                 <button class="btn btn-info" id="send-button">Wyślij <i class="fa fa-send"></i></button>
             </div>
-        </div>
+        </div>-->
     </div>
 
     <div clas="col-md-4">
@@ -33,6 +41,8 @@
         <div class="pull-right"><button id="sound-button" class="btn fa fa-music"></button></div>
         <h5 id="author">{{ request.user }}</h5>
         <h6 id="connection_status"></h6>
+        <button id="connect-button" class="btn btn-xs btn-success">Połącz</button>
+        <button id="disconnect-button" class="btn btn-xs btn-danger">Rozłącz</button>
         <audio src="{% static 'chat/sound.mp3' %}"></audio>
     </div>
 </div>

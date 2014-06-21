@@ -61,30 +61,29 @@ class MyChat(basic.LineReceiver):
         self.factory.clients.remove(self)
 
     def dataReceived(self, data):
+        messenger = Messenger()
         try:
             data = json.loads(data)
         except:
             pass
         print data
         if 'key' in data:
+            username = self.username
             try:
-                session = Session.objects.get(session_key=data['key'])
-                session_data = session.get_decoded()
-                uid = session_data.get('_auth_user_id')
-                user = models.User.objects.get(id=uid)
-                username = self.username
-                self.username = str(user)
-                Messenger().changed_username(self.factory.clients, self.username, username)
+                user = User()
+                self.username = user.get_user_by_session(data['key'])
+                messenger.changed_username(self.factory.clients, self.username, username)
             except:
                 pass
-
+        elif 'receiver' in data:
+            messenger.private_message(self.factory.clients, data['receiver'], self.username, data['prvMsg'])
         else:
             print 'received', repr(data)
             time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.factory.messages.append(data)
             self.factory.authors.append(self)
             self.factory.time.append(time)
-            Messenger().to_all(self.factory.clients, self, data)
+            messenger.to_all(self.factory.clients, self, data)
 
     def message(self, message):
         self.transport.write(message + '\n')
@@ -144,6 +143,9 @@ class Messenger(object):
     def connected_message(self, user):
         user.message(json.dumps({'connection_status': True, 'you': user.username}))
 
+    def private_message(self, clients, receiver, sender, msg):
+        print msg
+
 class User(object):
     DEFAULT_USERNAME = 'guest'
     def get_unique_name(self, clients):
@@ -157,6 +159,12 @@ class User(object):
             if unique == True:
                 return name
             id += 1
+    def get_user_by_session(self, key):
+        session = Session.objects.get(session_key=key)
+        session_data = session.get_decoded()
+        uid = session_data.get('_auth_user_id')
+        user = models.User.objects.get(id=uid)
+        return str(user)
 
 
 resource = WebSocketsResource(lookupProtocolForFactory(ChatFactory()))
