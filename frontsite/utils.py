@@ -1,4 +1,4 @@
-import Image
+from PIL import Image
 import os
 from kitty.settings import BASE_DIR
 
