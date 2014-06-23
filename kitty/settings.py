@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -25,6 +24,7 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = [
+    '*',
     '.kitty.td', # Allow domain and subdomains
     '.kitty.td.', # Also allow FQDN and subdomains
 ]
@@ -101,6 +101,7 @@ STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
 )
 
+# Travis-ci
 if 'TRAVIS' in os.environ:
     DATABASES = {
         'default': {
@@ -112,3 +113,10 @@ if 'TRAVIS' in os.environ:
             'PORT': '',
         }
     }
+
+# Heroku:
+try:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config()
+except ImportError:
+    pass
