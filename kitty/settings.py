@@ -114,9 +114,11 @@ if 'TRAVIS' in os.environ:
         }
     }
 
-# For Heroku:
-try:
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.config(default='postgres://localhost')
-except ImportError:
-    pass
+# For Heroku - put heroku var manually on the server:
+if 'HEROKU' in os.environ:
+    try:
+        import dj_database_url
+        DATABASES['default'] = dj_database_url.config(default='postgres://localhost')
+    except ImportError:
+        pass
+
