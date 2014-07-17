@@ -14,3 +14,17 @@ background: radial-gradient(ellipse at center,  rgba(255,255,255,0.9) 0%,rgba(25
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6ffffff', endColorstr='#e6ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 
 }
+
+.rhyme{
+    background-image:url('img/pap.jpeg');
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+}
+
+.well-image{
+    background-image:url('img/papirus.png');
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+    padding-top:5%;
+    padding-bottom:5%;
+}

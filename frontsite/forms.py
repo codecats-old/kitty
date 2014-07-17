@@ -10,15 +10,27 @@ from frontsite.models import UserProfile, Category, Avatar, Rhyme, Comment
 class CommentForm(forms.ModelForm):
     content = forms.CharField(widget=forms.Textarea(
         attrs={'class': 'form-control'}), label=u'Komentarz',
-        error_messages={'invalid': u'Komentarz ma zły format.'}
+        error_messages={'invalid': u'Komentarz ma błędny format.'}
     )
     class Meta:
         model = Comment
         fields = ('content', )
 
 class RhymeForm(forms.ModelForm):
-    title = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    content = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control'}))
+    title = forms.CharField(
+        widget=forms.TextInput(attrs={'class':'form-control'}),
+        label=u'Tytuł'
+    )
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={'class':'form-control'}),
+        label=u'Treść'
+    )
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        label=u'Kategoria',
+        empty_label="     ",
+        required=False
+    )
     class Meta:
         model = Rhyme
         fields = ('title', 'content', 'category')

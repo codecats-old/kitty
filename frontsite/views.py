@@ -48,7 +48,8 @@ def rhyme_view(request, id):
             comment.author = request.user.profile
             comment.save()
             return redirect(reverse('frontsite:rhyme_view', kwargs={'id': id}))
-    else: form = CommentForm()
+    else:
+        form = CommentForm()
     return render(request, 'frontsite/rhyme_view.html', {
         'rhyme': rhyme,
         'comments': find_comments(rhyme),
@@ -59,7 +60,9 @@ class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
 
     def find_data(self):
-        rhymes = models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-created')
+        rhymes = models.Rhyme.objects.all()\
+            .annotate(vote_strength=Sum('votes__strength'))\
+            .order_by('-created')
         paginator = Paginator(rhymes, 10)
         page = self.request.GET.get('page')
         try:
@@ -99,6 +102,8 @@ class Rhyme(FormView):
                 return redirect(reverse('frontsite:index'))
 
         rhymes = self.find_data()
+        for rhyme in rhymes:
+            setattr(rhyme, 'comments_count', len(rhyme.comments.all()))
         return render(self.request, self.template_name, {
             'form': RhymeForm(instance=rhyme),
             'rhymes': rhymes,
@@ -253,7 +258,7 @@ def vote(request, profile_id):
             vote.save()
     return redirect(reverse('frontsite:all_users'))
 
-
+@login_required
 def vote_rhyme(request, rhyme_id):
     vote = models.VoteRhyme.objects.filter(author__id=request.user.profile.id, rhyme__id=rhyme_id)
     if not vote:

@@ -7,10 +7,10 @@
         <div class="col-md-8 well text-center">
             <h3><a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a></h3>
             <h4><small>{{ rhyme.category.title }}</small></h4>
-            {{ rhyme.content|linebreaks }}
+            {{ rhyme.content|safe|linebreaks }}
             <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
             {% if request.user.is_authenticated == True %}
-                <a class="btn btn-danger" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
+                <a class="btn btn-xs" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
                     Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
                 </a>
                 {% if rhyme in request.user.profile.stored_rhymes.all %}
@@ -19,8 +19,8 @@
                     <a href="{% url 'frontsite:rhyme-store' rhyme.id %}" class="pull-left btn btn-success">Zapisz</a>
                 {% endif %}
                 {% if rhyme.author.id == request.user.profile.id %}
-                    <a class="pull-right btn btn-primary" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
-                    <a class="pull-right btn btn-primary" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
+                    <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
+                    <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
                 {% endif %}
                 <form action="{% url 'frontsite:rhyme_view' rhyme.id %}" method="POST">
                     {{ form.as_p }}
