@@ -129,8 +129,10 @@ $(document).ready(function () {
                 $('#connection_status').html('połączono...');
                 $('#author').html(data['you']);
             } else if (typeof data['username_changed'] !== 'undefined') {
+                if ($('#author').html() === data['username_changed'].old) {
+                    $('#author').html(data['username_changed'].new);
+                }
                 var li = $('[data-chat=' + data['username_changed'].old + ']');
-                $('#author').html(data['username_changed'].new);
                 li.html('<button name="user">' + data['username_changed'].new + '</button>');
                 li.attr('data-chat', data['username_changed'].new);
 

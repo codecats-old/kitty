@@ -15,4 +15,6 @@ if path not in sys.path:
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kitty.settings")
 
 from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+from dj_static import Cling
+
+application = Cling(get_wsgi_application())
