@@ -22,48 +22,52 @@
         </form>
     </div>
 {% endif %}
-    <div class="col-md-12">
+    <div class="col-md-12" ng-controller="RhymeListCtrl">
         {% for rhyme in rhymes %}
             <div class="col-md-4 well rhyme">
-                <h2 class="text-center well-image">
-                    <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
-                        {{ rhyme.title }}</a><small> {{ rhyme.category.title }}</small>
-                </h2>
+                <div class="col-md-12">
+                    <h2 class="text-center well-image">
+                        <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
+                            {{ rhyme.title }}</a><small> {{ rhyme.category.title }}</small>
+                    </h2>
+                </div>
                 <p>{{ rhyme.content|safe|linebreaks }}</p>
                 <hr>
                 <div class="row well-image">
-                    <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
-                    <br>
-                    <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="pull-right">{{ rhyme.author.user.username }}</a>
+                    <div class="col-md-12">
+                        <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
+                        <br>
+                        <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="pull-right">{{ rhyme.author.user.username }}</a>
 
-                        <a class="btn btn-xs" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
-                            Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
-                        </a>
+                            <a class="btn btn-xs" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
+                                Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
+                            </a>
 
-                    {% if request.user.is_authenticated == True %}
-                        <div class="center-block">
-                        {% if rhyme not in request.user.profile.stored_rhymes.all %}
-                            <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-store' rhyme.id %}">
-                                Zapisz
-                            </a>
-                        {% else %}
-                            <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-unstore' rhyme.id %}">
-                                Wypisz się
-                            </a>
+                        {% if request.user.is_authenticated == True %}
+                            <div class="center-block">
+                            {% if rhyme not in request.user.profile.stored_rhymes.all %}
+                                <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-store' rhyme.id %}">
+                                    Zapisz
+                                </a>
+                            {% else %}
+                                <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-unstore' rhyme.id %}">
+                                    Wypisz się
+                                </a>
+                            {% endif %}
+                            {% if rhyme.author.id == request.user.profile.id %}
+                                <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
+                                <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
+                            {% endif %}
+                            </div>
                         {% endif %}
-                        {% if rhyme.author.id == request.user.profile.id %}
-                            <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
-                            <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
+                        {% if rhyme.comments_count > 0 %}
+                            <br />
+                            <div class="pull-right">
+                                <span class="text text-success">Komentarzy: </span>
+                                <label class="label label-success">{{ rhyme.comments_count }}</label>
+                            </div>
                         {% endif %}
-                        </div>
-                    {% endif %}
-                    {% if rhyme.comments_count > 0 %}
-                        <br />
-                        <div class="pull-right">
-                            <span class="text text-success">Komentarzy: </span>
-                            <label class="label label-success">{{ rhyme.comments_count }}</label>
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         {% endfor %}

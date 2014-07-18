@@ -5,20 +5,37 @@ body{
     background-attachment:fixed;
 }
 .well-opacity{
-background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.9) 34%, rgba(255,255,255,0.9) 59%, rgba(255,255,255,0.9) 100%); /* FF3.6+ */
-background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,0.9)), color-stop(34%,rgba(255,255,255,0.9)), color-stop(59%,rgba(255,255,255,0.9)), color-stop(100%,rgba(255,255,255,0.9))); /* Chrome,Safari4+ */
-background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.9) 34%,rgba(255,255,255,0.9) 59%,rgba(255,255,255,0.9) 100%); /* Chrome10+,Safari5.1+ */
-background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.9) 34%,rgba(255,255,255,0.9) 59%,rgba(255,255,255,0.9) 100%); /* Opera 12+ */
-background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.9) 34%,rgba(255,255,255,0.9) 59%,rgba(255,255,255,0.9) 100%); /* IE10+ */
-background: radial-gradient(ellipse at center,  rgba(255,255,255,0.9) 0%,rgba(255,255,255,0.9) 34%,rgba(255,255,255,0.9) 59%,rgba(255,255,255,0.9) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6ffffff', endColorstr='#e6ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+background: rgb(137,126,65); /* Old browsers */
+background: -moz-radial-gradient(center, ellipse cover, rgba(137,126,65,1) 0%, rgba(124,115,60,1) 40%, rgba(104,97,52,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(137,126,65,1)), color-stop(40%,rgba(124,115,60,1)), color-stop(100%,rgba(104,97,52,1))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover, rgba(137,126,65,1) 0%,rgba(124,115,60,1) 40%,rgba(104,97,52,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover, rgba(137,126,65,1) 0%,rgba(124,115,60,1) 40%,rgba(104,97,52,1) 100%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover, rgba(137,126,65,1) 0%,rgba(124,115,60,1) 40%,rgba(104,97,52,1) 100%); /* IE10+ */
+background: radial-gradient(ellipse at center, rgba(137,126,65,1) 0%,rgba(124,115,60,1) 40%,rgba(104,97,52,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#897e41', endColorstr='#686134',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+background: url(img/Deska-rustic-jasna_productimage.jpg) 0 0 repeat;
+background-size: 100% auto;
 
 }
-
 .rhyme{
     background-image:url('img/pap.jpeg');
     background-repeat:no-repeat;
     background-size: 100% 100%;
+    -webkit-box-shadow: 7px 7px 9px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    7px 7px 9px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         7px 7px 9px 0px rgba(50, 50, 50, 0.75);
+
+    -moz-border-radius-topleft: 5px;
+-webkit-border-top-left-radius: 5px;
+ border-top-left-radius: 5px;
+-moz-border-radius-topright: 66px;
+-webkit-border-top-right-radius: 66px;
+border-top-right-radius: 66px;
+-moz-border-radius-bottomright: 5px;
+-webkit-border-bottom-right-radius: 5px;
+border-bottom-right-radius: 5px;
+-moz-border-radius-bottomleft: 5px;
+
 }
 
 .well-image{

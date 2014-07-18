@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load filters %}
 <!DOCTYPE html>
-<html>
+<html ng-app="kittyApp">
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Wierszyki{% endblock %}</title>
@@ -108,6 +108,17 @@
     <script type="text/javascript" src="{% static 'frontsite/jquery-config.js' %}"></script>
     <script type="text/javascript" src="{% static 'chat/chat.js' %}"></script>
     <script type="text/javascript" src="{% static 'chat/client.js' %}"></script>
+{% endblock %}
+{% block angularlib %}
+    <script type="text/javascript" src="{% static 'frontsite/angular/lib/angular.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontsite/angular/lib/django-angular.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontsite/angular/lib/angular-resource.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontsite/angular/lib/angular-route.js' %}"></script>
+{% endblock %}
+{% block angularapp %}
+    <script type="text/javascript" src="{% static 'frontsite/angular/app/main.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontsite/angular/app/config.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontsite/angular/app/controllers.js' %}"></script>
 {% endblock %}
 {% block javascript-custom %}{% endblock %}
     </body>
