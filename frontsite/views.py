@@ -258,13 +258,17 @@ def vote(request, profile_id):
             vote.save()
     return redirect(reverse('frontsite:all_users'))
 
-@login_required
 def vote_rhyme(request, rhyme_id):
     vote = models.VoteRhyme.objects.filter(author__id=request.user.profile.id, rhyme__id=rhyme_id)
     if not vote:
         vote = models.VoteRhyme()
         vote.author, vote.rhyme, vote.strength = (request.user.profile, models.Rhyme.objects.get(pk=rhyme_id), 1)
         vote.save()
+    if request.is_ajax():
+        rhyme = models.Rhyme.objects.all().filter(pk=rhyme_id).annotate(vote_strength=Sum('votes__strength'))[0]
+        print '>>>>>>>>>>>>>>>>>>>>>>>>'
+        print rhyme.vote_strength
+        return HttpResponse(json.dumps({'strength': rhyme.vote_strength}))
     return redirect(reverse('frontsite:index'))
 
 def rhyme_store(request, id):

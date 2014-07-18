@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% load staticfiles %}
+{% load filters %}
 {% block content %}
 <div class="row-fluid">
 {% if request.user.is_authenticated == True and request.user.id == user.id %}
@@ -23,8 +24,14 @@
     </div>
 {% endif %}
     <div class="col-md-12" ng-controller="RhymeListCtrl">
+        {% with 0 as scarfording %}
         {% for rhyme in rhymes %}
-            <div class="col-md-4 well rhyme">
+            {% if scarfording == 0 %}
+                <div class="row">
+            {% endif %}
+            {% ++ scarfording %}
+
+            <div class="col-md-5 col-md-offset-1 well rhyme">
                 <div class="col-md-12">
                     <h2 class="text-center well-image">
                         <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
@@ -34,12 +41,16 @@
                 <p>{{ rhyme.content|safe|linebreaks }}</p>
                 <hr>
                 <div class="row well-image">
-                    <div class="col-md-12">
+                    <div class="col-md-12" ng-controller="VoteRhymeCtrl">
                         <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
                         <br>
                         <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="pull-right">{{ rhyme.author.user.username }}</a>
 
-                            <a class="btn btn-xs" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
+                            <a
+                                    ng-click="log($event)"
+                                    class="btn btn-xs"
+                                    href="{% url 'frontsite:vote-rhyme' rhyme.id %}"
+                            >
                                 Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
                             </a>
 
@@ -70,7 +81,16 @@
                     </div>
                 </div>
             </div>
+            {% if scarfording == 2 %}
+                </div>
+                {% set_int_var 0 as scarfording %}
+            {% endif %}
         {% endfor %}
+            <!-- close row if already opened -->
+            {% if scarfording > 0 and scarfording < 2 %}
+                </div>
+            {% endif %}
+        {% endwith %}
         <div class="row">
             <div class="text-center pagination col-md-12">
                 <span class="step-links">

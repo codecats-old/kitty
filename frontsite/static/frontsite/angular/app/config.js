@@ -5,5 +5,4 @@ config(function($httpProvider) {
 config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
-    console.log($interpolateProvider);
 });
