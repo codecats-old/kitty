@@ -1,4 +1,7 @@
-from PIL import Image
+try:
+    from Pillow import Image
+except ImportError:
+    from PIL import Image
 import os
 from kitty.settings import BASE_DIR
 

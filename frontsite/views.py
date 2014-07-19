@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View, FormView
@@ -84,6 +84,14 @@ class Rhyme(FormView):
             rhyme.save()
             rhyme.profiles.add(self.request.user.profile)
             return  redirect(reverse('frontsite:index'))
+        if self.request.is_ajax():
+            form = RhymeForm(self.request.body)
+            print self.request.body
+            print '--------------------------|||'
+            print form.errors
+            #print form
+            #return HttpResponse(form)
+
         return render(self.request, self.template_name, {
             'form': form,
             'rhymes': self.find_data(),
@@ -102,8 +110,8 @@ class Rhyme(FormView):
                 return redirect(reverse('frontsite:index'))
 
         rhymes = self.find_data()
-        for rhyme in rhymes:
-            setattr(rhyme, 'comments_count', len(rhyme.comments.all()))
+        for rhymeitem in rhymes:
+            setattr(rhymeitem, 'comments_count', len(rhymeitem.comments.all()))
         return render(self.request, self.template_name, {
             'form': RhymeForm(instance=rhyme),
             'rhymes': rhymes,

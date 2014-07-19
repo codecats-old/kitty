@@ -1,8 +1,15 @@
 from django import template
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.template import Library
+import re
 
 register = Library()
+
+@register.filter(name='ngmodel')
+def ng_model(value, prefix='fields.'):
+    attrs = value.field.widget.attrs
+    value.field.widget.attrs['ng-model'] = prefix + value.name
+    return str(value)
 
 @register.filter(name = 'commatodot')
 def commatodot(value):

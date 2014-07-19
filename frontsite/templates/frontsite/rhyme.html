@@ -2,19 +2,19 @@
 {% load staticfiles %}
 {% load filters %}
 {% block content %}
-<div class="row-fluid">
+<div class="row-fluid" ng-controller="RhymeCtrl">
 {% if request.user.is_authenticated == True and request.user.id == user.id %}
     <div class="text-center">
         <button type="button" class="btn text-warning text-center fa fa-folder-open" data-toggle="collapse" data-target="#demo">
             Dodaj
         </button>
     </div>
-    <div class="col-md-12 well collapse out" id="demo">
-        <form action="" role="form" method="post">
+    <div class="col-md-12 well rhyme collapse out" id="demo">
+        <form action="" role="form" method="post" ng-submit="add($event)">
             {% for field in form.visible_fields %}
                 <div class="form-group {% if field.errors %}has-error{% endif %}">
                     {{ field.label_tag }}
-                    {{ field }}
+                    {{ field|ngmodel }}
                     <div class="text-warning bg bg-danger">{{ field.errors }}</div>
                 </div>
             {% endfor %}
@@ -23,7 +23,7 @@
         </form>
     </div>
 {% endif %}
-    <div class="col-md-12" ng-controller="RhymeListCtrl">
+    <div class="col-md-12">
         {% with 0 as scarfording %}
         {% for rhyme in rhymes %}
             {% if scarfording == 0 %}
@@ -44,15 +44,23 @@
                     <div class="col-md-12" ng-controller="VoteRhymeCtrl">
                         <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
                         <br>
-                        <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="pull-right">{{ rhyme.author.user.username }}</a>
-
-                            <a
-                                    ng-click="log($event)"
-                                    class="btn btn-xs"
-                                    href="{% url 'frontsite:vote-rhyme' rhyme.id %}"
-                            >
-                                Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
-                            </a>
+                        <div class="pull-right">
+                            {% if rhyme.author.user.profile.avatar.path %}
+                            <img
+                                    src="{% url 'frontsite:show-avatar' rhyme.author.user.profile.avatar.path|add:'tiny' %}"
+                                    alt="avatar"
+                                    class="img img-circle"
+                            />
+                            {% endif %}
+                            <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="">{{ rhyme.author.user.username }}</a>
+                        </div>
+                        <a
+                                ng-click="vote($event)"
+                                class="btn btn-xs"
+                                href="{% url 'frontsite:vote-rhyme' rhyme.id %}"
+                        >
+                            Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
+                        </a>
 
                         {% if request.user.is_authenticated == True %}
                             <div class="center-block">
@@ -115,7 +123,7 @@
 {% block javascript-custom %}
 <script type="text/javascript" src="{% static 'frontsite/tinymce/js/tinymce/tinymce.min.js' %}"></script>
 <script>
-    tinymce.init({
+    tinyMCE.init({
         selector: "textarea",
         plugins: [
             "advlist autolink lists link image charmap print preview anchor",
