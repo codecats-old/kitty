@@ -85,10 +85,16 @@ class Rhyme(FormView):
             rhyme.profiles.add(self.request.user.profile)
             return  redirect(reverse('frontsite:index'))
         if self.request.is_ajax():
-            form = RhymeForm(self.request.body)
-            print self.request.body
-            print '--------------------------|||'
-            print form.errors
+            form = RhymeForm(json.loads(self.request.body))
+            form.errors
+            # if form.is_valid():
+            #     print 'a'
+
+            return HttpResponse(json.dumps({
+                'success' : form.is_valid(),
+                'errors' : [(k, form.error_class.as_text(v)) for k, v in form.errors.items()]
+            }))
+
             #print form
             #return HttpResponse(form)
 
@@ -274,8 +280,6 @@ def vote_rhyme(request, rhyme_id):
         vote.save()
     if request.is_ajax():
         rhyme = models.Rhyme.objects.all().filter(pk=rhyme_id).annotate(vote_strength=Sum('votes__strength'))[0]
-        print '>>>>>>>>>>>>>>>>>>>>>>>>'
-        print rhyme.vote_strength
         return HttpResponse(json.dumps({'strength': rhyme.vote_strength}))
     return redirect(reverse('frontsite:index'))
 
