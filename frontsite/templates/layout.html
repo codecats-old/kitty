@@ -91,6 +91,13 @@
         {% endblock %}
 <section class="container well-opacity">
 {% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div id="note" class="{% if message.tags %} {{ message.tags }}{% endif %} message">
+                <p>{{ message }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
     {% block content %}{% endblock %}
 {% endblock %}
 </section>

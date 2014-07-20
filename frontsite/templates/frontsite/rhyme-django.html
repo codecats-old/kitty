@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+{% load filters %}
+{% block content %}
+<div class="row-fluid" ng-controller="RhymeCtrl">
+{% if request.user.is_authenticated == True and request.user.id == user.id %}
+    <div class="text-center">
+        <button type="button" class="btn text-warning text-center fa fa-folder-open" data-toggle="collapse" data-target="#demo">
+            Dodaj
+        </button>
+    </div>
+    <div class="col-md-12 well rhyme collapse out" id="demo">
+        <form action="" role="form" method="post" ng-submit="add($event)">
+            {% for field in form.visible_fields %}
+                <div class="form-group {% if field.errors %}has-error{% endif %}">
+                    {{ field.label_tag }}
+                    {{ field|ngmodel }}
+                    {% with 'errors.'|add:field.name as error_field %}
+                        <div class="text-warning bg bg-danger">
+                            {{ field.errors }}{$ {{ error_field }} $}
+                        </div>
+                    {% endwith %}
+                </div>
+            {% endfor %}
+            {% csrf_token %}
+            <input class="btn btn-success col-md-12" type="submit" value="Zapisz" />
+        </form>
+    </div>
+{% endif %}
+    <div class="col-md-12">
+        {% with 0 as scarfording %}
+        {% for rhyme in rhymes %}
+            <!-- {# angular model -->
+            {% with loop=forloop.counter|stringformat:"s" %}
+            {% with "rhymes['"|add:loop|add:"']"|add:".title" as rhymes_model %}
+                <div ng-model="{{ rhymes_model }}">{{ rhyme.title }}</div>
+                <script>
+                    if (typeof rhymes === 'undefined') rhymes = {};
+                    {{ rhymes_model|safe }} = '{{ rhyme.title }}';
+                </script>
+            {% endwith %}
+            {% endwith %}
+            <!-- angular model #} -->
+            {% if scarfording == 0 %}
+                <div class="row">
+            {% endif %}
+            {% ++ scarfording %}
+
+            <div class="col-md-5 col-md-offset-1 well rhyme">
+                <div class="col-md-12">
+                    <h2 class="text-center well-image">
+                        <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
+                            {{ rhyme.title }}
+                        </a>
+                        <small> {{ rhyme.category.title }}</small>
+                    </h2>
+                </div>
+                <p>{{ rhyme.content|safe|linebreaks }}</p>
+                <hr>
+                <div class="row well-image">
+                    <div class="col-md-12" ng-controller="VoteRhymeCtrl">
+                        <i class="pull-right text-info">{{ rhyme.created|date:'d M, Y' }}</i>
+                        <br>
+                        <div class="pull-right">
+                            {% if rhyme.author.user.profile.avatar.path %}
+                            <img
+                                    src="{% url 'frontsite:show-avatar' rhyme.author.user.profile.avatar.path|add:'tiny' %}"
+                                    alt="avatar"
+                                    class="img img-circle"
+                            />
+                            {% endif %}
+                            <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="">{{ rhyme.author.user.username }}</a>
+                        </div>
+                        <a
+                                ng-click="vote($event)"
+                                class="btn btn-xs"
+                                href="{% url 'frontsite:vote-rhyme' rhyme.id %}"
+                        >
+                            Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
+                        </a>
+
+                        {% if request.user.is_authenticated == True %}
+                            <div class="center-block">
+                            {% if rhyme not in request.user.profile.stored_rhymes.all %}
+                                <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-store' rhyme.id %}">
+                                    Zapisz
+                                </a>
+                            {% else %}
+                                <a class="btn btn-success fa fa-save" href="{% url 'frontsite:rhyme-unstore' rhyme.id %}">
+                                    Wypisz się
+                                </a>
+                            {% endif %}
+                            {% if rhyme.author.id == request.user.profile.id %}
+                                <a class="pull-right btn btn-primary btn-xs"
+                                   ng-click="edit($event)"
+                                   href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj
+                                </a>
+                                <a class="pull-right btn btn-primary btn-xs"
+                                   href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń
+                                </a>
+                            {% endif %}
+                            </div>
+                        {% endif %}
+                        {% if rhyme.comments_count > 0 %}
+                            <br />
+                            <div class="pull-right">
+                                <span class="text text-success">Komentarzy: </span>
+                                <label class="label label-success">{{ rhyme.comments_count }}</label>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if scarfording == 2 %}
+                </div>
+                {% set_int_var 0 as scarfording %}
+            {% endif %}
+        {% endfor %}
+            <!-- close row if already opened -->
+            {% if scarfording > 0 and scarfording < 2 %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="row">
+            <div class="text-center pagination col-md-12">
+                <span class="step-links">
+                    {% if rhymes.has_previous %}
+                        <a href="?page={{ rhymes.previous_page_number }}">poprzednia</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Strona {{ rhymes.number }} z {{ rhymes.paginator.num_pages }}.
+                    </span>
+
+                    {% if rhymes.has_next %}
+                        <a href="?page={{ rhymes.next_page_number }}">następna</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript-custom %}
+<script type="text/javascript" src="{% static 'frontsite/tinymce/js/tinymce/tinymce.min.js' %}"></script>
+<script>
+    tinyMCE.init({
+        selector: "textarea",
+        plugins: [
+            "advlist autolink lists link image charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table contextmenu paste"
+        ],
+        height : 300,
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+    });
+</script>
+{% endblock %}

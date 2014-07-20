@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from random import randint
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
@@ -59,10 +59,12 @@ def rhyme_view(request, id):
 class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
 
-    def find_data(self):
+    def find_data(self, use_paginator=True):
         rhymes = models.Rhyme.objects.all()\
             .annotate(vote_strength=Sum('votes__strength'))\
             .order_by('-created')
+        if use_paginator is False:
+            return rhymes
         paginator = Paginator(rhymes, 10)
         page = self.request.GET.get('page')
         try:
@@ -75,28 +77,27 @@ class Rhyme(FormView):
 
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
-        form = RhymeForm(self.request.POST)
-        if form.is_valid():
+        data = self.request.POST
+        if self.request.is_ajax():
+            data = json.loads(self.request.body)
+        form = RhymeForm(data)
+        form_is_valid = form.is_valid()
+        if form_is_valid:
             rhyme = form.save(commit=False)
             if self.kwargs.has_key('id'):
                 rhyme.id = self.kwargs['id']
             rhyme.author = self.request.user.profile
             rhyme.save()
             rhyme.profiles.add(self.request.user.profile)
-            return  redirect(reverse('frontsite:index'))
+            if not self.request.is_ajax():
+                return  redirect(reverse('frontsite:index'))
+            if form_is_valid:
+                messages.info(self.request, u'Dane zostały dodane')
         if self.request.is_ajax():
-            form = RhymeForm(json.loads(self.request.body))
-            form.errors
-            # if form.is_valid():
-            #     print 'a'
-
             return HttpResponse(json.dumps({
-                'success' : form.is_valid(),
-                'errors' : [(k, form.error_class.as_text(v)) for k, v in form.errors.items()]
+                'valid': form_is_valid,
+                'errors': [(k, form.error_class.as_text(v)) for k, v in form.errors.items()]
             }))
-
-            #print form
-            #return HttpResponse(form)
 
         return render(self.request, self.template_name, {
             'form': form,
@@ -118,6 +119,10 @@ class Rhyme(FormView):
         rhymes = self.find_data()
         for rhymeitem in rhymes:
             setattr(rhymeitem, 'comments_count', len(rhymeitem.comments.all()))
+        if self.request.is_ajax():
+            return HttpResponse(json.dumps({
+                'data': self.find_data(False)
+            }))
         return render(self.request, self.template_name, {
             'form': RhymeForm(instance=rhyme),
             'rhymes': rhymes,
