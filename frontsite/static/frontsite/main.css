@@ -46,7 +46,9 @@ border-bottom-right-radius: 5px;
     padding-bottom:5%;
 }
 
-
+.hidden{
+    display: none;
+}
 
 
 

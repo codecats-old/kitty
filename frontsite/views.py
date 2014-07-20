@@ -4,6 +4,7 @@ from random import randint
 from django.contrib import auth, messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Sum, Count
+from django.forms import model_to_dict
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.contrib.auth import logout
@@ -59,12 +60,11 @@ def rhyme_view(request, id):
 class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
 
-    def find_data(self, use_paginator=True):
+    def find_data(self):
         rhymes = models.Rhyme.objects.all()\
             .annotate(vote_strength=Sum('votes__strength'))\
             .order_by('-created')
-        if use_paginator is False:
-            return rhymes
+
         paginator = Paginator(rhymes, 10)
         page = self.request.GET.get('page')
         try:
@@ -92,7 +92,7 @@ class Rhyme(FormView):
             if not self.request.is_ajax():
                 return  redirect(reverse('frontsite:index'))
             if form_is_valid:
-                messages.info(self.request, u'Dane zostały dodane')
+                messages.info(self.request, u'Dane zostały zaakceptowane')
         if self.request.is_ajax():
             return HttpResponse(json.dumps({
                 'valid': form_is_valid,
@@ -121,7 +121,7 @@ class Rhyme(FormView):
             setattr(rhymeitem, 'comments_count', len(rhymeitem.comments.all()))
         if self.request.is_ajax():
             return HttpResponse(json.dumps({
-                'data': self.find_data(False)
+                'data': [model_to_dict(item) for item in rhymes]
             }))
         return render(self.request, self.template_name, {
             'form': RhymeForm(instance=rhyme),
