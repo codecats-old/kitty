@@ -60,10 +60,15 @@ def rhyme_view(request, id):
 class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
 
-    def find_data(self):
-        rhymes = models.Rhyme.objects.all()\
-            .annotate(vote_strength=Sum('votes__strength'))\
-            .order_by('-created')
+    def find_data(self, category_id=None):
+        if category_id is None:
+            rhymes = models.Rhyme.objects.all()\
+                .annotate(vote_strength=Sum('votes__strength'))\
+                .order_by('-created')
+        else:
+            rhymes = models.Rhyme.objects.filter(category=category_id)\
+                .annotate(vote_strength=Sum('votes__strength'))\
+                .order_by('-created')
 
         paginator = Paginator(rhymes, 10)
         page = self.request.GET.get('page')
@@ -106,17 +111,27 @@ class Rhyme(FormView):
             'rhymesStored': self.request.user.profile.stored_rhymes
         })
 
+    def delete(self, *args, **kwargs):
+        if self.kwargs.has_key('id'):
+            rhyme = models.Rhyme.objects.get(pk=self.kwargs['id'])
+            if self.kwargs.has_key('delete') and self.kwargs['delete'] == 'delete':
+                rhyme.delete()
+        return HttpResponse(json.dumps({'success': True}))
+
     def get(self, *args, **kwargs):
         rhyme, rhymesAuthor, rhymesStored = (None, None, None)
         if hasattr(self.request.user, 'profile'):
-            rhymesAuthor, rhymesStored = (self.request.user.profile.created_rhymes, self.request.user.profile.stored_rhymes)
+            rhymesAuthor = self.request.user.profile.created_rhymes
+            rhymesStored = self.request.user.profile.stored_rhymes
         if self.kwargs.has_key('id'):
             rhyme = models.Rhyme.objects.get(pk=self.kwargs['id'])
             if self.kwargs.has_key('delete') and self.kwargs['delete'] == 'delete':
                 rhyme.delete()
                 return redirect(reverse('frontsite:index'))
-
-        rhymes = self.find_data()
+        by_category = None
+        if self.kwargs.has_key('category_id'):
+            by_category = self.kwargs['category_id']
+        rhymes = self.find_data(by_category)
         for rhymeitem in rhymes:
             setattr(rhymeitem, 'comments_count', len(rhymeitem.comments.all()))
         if self.request.is_ajax():
@@ -127,7 +142,8 @@ class Rhyme(FormView):
             'form': RhymeForm(instance=rhyme),
             'rhymes': rhymes,
             'rhymesAuthor': rhymesAuthor,
-            'rhymesStored': rhymesStored
+            'rhymesStored': rhymesStored,
+            'categories' : models.Category.objects.all()
         })
 
 class Category(FormView):

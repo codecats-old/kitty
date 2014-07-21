@@ -33,28 +33,69 @@
                 </div>
                 <!-- Collection of nav links, forms, and other content for toggling -->
                 <div id="navbarCollapse" class="collapse navbar-collapse">
-
                     <ul class="nav navbar-nav">
                         {% url 'frontsite:category' as currentUrl %}
                         <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                            <a class="btn" href="{% url 'frontsite:category' %}">Kategorie <i class="fa fa-sitemap"></i></a>
+                            <a class="btn" href="{% url 'frontsite:category' %}">
+                                <i class="fa fa-sitemap"></i>Kategorie
+                            </a>
                         </li>
-                        {% url 'frontsite:all_users' as currentUrl %}
-                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                            <a class="btn" href="{% url 'frontsite:all_users' %}">Użytkownicy <i class="fa fa-users"></i></a>
+                        <li>
+                            <span class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                                    <span class="caret"><span class="badge">{{ categories|length }}</span></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                    {% for category in categories %}
+                                        {% url 'frontsite:rhymes_by_category' category.id as categoryUrl %}
+                                        <li role="presentation"
+                                            {% if request.get_full_path == categoryUrl %}class="active"{% endif %}>
+                                            <a role="menuitem" tabindex="-1"
+                                               href="{{ categoryUrl }}">
+                                                {{ category.title}}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </span>
                         </li>
-                        {% url 'frontsite:popular' as currentUrl %}
-                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                            <a class="btn" href="{% url 'frontsite:popular' %}">Najpopularniejsze <i class="fa fa-slack"></i></a>
-                        </li>
-                        {% url 'frontsite:random' as currentUrl %}
-                        <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                            <a class="btn" href="{% url 'frontsite:random' %}">Losowe <i class="fa fa-random"></i></a>
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="fa fa-users"></i>Menu <b class="caret"></b></a>
+                            <ul role="menu" class="dropdown-menu">
+                                {% url 'frontsite:all_users' as currentUrl %}
+                                <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                                    <a class="btn" href="{% url 'frontsite:all_users' %}">
+                                        <i class="fa fa-users pull-left"></i>Użytkownicy
+                                    </a>
+                                </li>
+                                {% url 'frontsite:popular' as currentUrl %}
+                                <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                                    <a class="btn" href="{% url 'frontsite:popular' %}">
+                                        <i class="fa fa-slack pull-left"></i>Najpopularniejsze
+                                    </a>
+                                </li>
+                                {% url 'frontsite:random' as currentUrl %}
+                                <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
+                                    <a class="btn" href="{% url 'frontsite:random' %}">
+                                        <i class="fa fa-random pull-left"></i>Losowe
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         {% if request.user.is_authenticated == True %}
                         {% url 'frontsite:stored' as currentUrl %}
                         <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
-                            <a class="btn" href="{% url 'frontsite:stored' %}">Zapisane <i class="fa fa-book"></i></a>
+                            <a class="btn" href="{% url 'frontsite:stored' %}">
+                                <i class="fa fa-book"></i>Zapisane <span class="badge">{{ request.user.profile.stored_rhymes.count }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <form class="navbar-form navbar-left" role="search">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Szukaj">
+                                </div>
+                                <button type="submit" class="btn btn-default">Szukaj</button>
+                            </form>
                         </li>
                         {% endif %}
                         {% comment %}
@@ -127,6 +168,7 @@
     <script type="text/javascript" src="{% static 'frontsite/angular/app/main.js' %}"></script>
     <script type="text/javascript" src="{% static 'frontsite/angular/app/config.js' %}"></script>
     <script type="text/javascript" src="{% static 'frontsite/angular/app/controllers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontsite/angular/app/services.js' %}"></script>
 {% endblock %}
 {% block javascript-custom %}{% endblock %}
     </body>

@@ -19,16 +19,25 @@
         };
     });
 
-    $scope.delete = function remove (e, loopCounter) {
+    $scope.remove = function remove (e, loopCounter) {
         e.preventDefault();
         if (typeof $scope.fields === 'undefined') $scope.fields = {};
-        $http.
-            post(e.currentTarget.href).
-            then(
-                function success (response) {
-                    document.location.reload();
-                }
-            );
+        $scope.modalTitle = 'Usunąć wiersz "' + $scope.rhymes[loopCounter].title + '"?';
+        $scope.modalBody = 'Usunięcie danych jest nieodwracalne, potwierdź decyzję';
+        $scope.modalPrimaryBtn = 'Usuń';
+        $scope.modalCloseBtn = 'Zamknij';
+        $scope.modalConfirmAction = function (event) {
+            angular.element('#modal').modal('hide');
+            $http.
+                delete(e.currentTarget.href).
+                then(
+                    function success (response) {
+                        angular.element('#rhyme-id-' + loopCounter).remove();
+                        //document.location.reload();
+                    }
+                );
+        }
+        angular.element('#modal').modal('show');
     };
 
     $scope.edit = function edit (e, loopCounter) {

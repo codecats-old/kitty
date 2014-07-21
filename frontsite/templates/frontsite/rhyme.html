@@ -32,19 +32,19 @@
         <div>
         {% with 0 as scarfording %}
         {% for rhyme in rhymes %}
-            <!-- {# for angular -->
-            <div style="display:none" rhyme="{{ forloop.counter }}">
-                <id>{{ rhyme.id }}</id>
-                <title>{{ rhyme.title }}</title>
-                <content>{{ rhyme.content|safe }}</content>
-                <category>{{ rhyme.category.id }}</category>
-            </div>
-            <!-- angular #} -->
                 {% if scarfording == 0 %}
                     <div class="row">
                 {% endif %}
                 {% ++ scarfording %}
-                <div class="col-md-5 col-md-offset-1 well rhyme">
+                <div class="col-md-5 col-md-offset-1 well rhyme" id="rhyme-id-{{ forloop.counter }}">
+                    <!-- {# for angular -->
+                    <div style="display:none" rhyme="{{ forloop.counter }}">
+                        <id>{{ rhyme.id }}</id>
+                        <title>{{ rhyme.title }}</title>
+                        <content>{{ rhyme.content|safe }}</content>
+                        <category>{{ rhyme.category.id }}</category>
+                    </div>
+                    <!-- angular #} -->
                     <div class="col-md-12">
                         <h2 class="text-center well-image">
                             <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
@@ -141,6 +141,25 @@
             </div>
         </div>
     </div>
+    <!-- {% modal -->
+    <div class="modal fade" id="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">{$ modalTitle $}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{$ modalBody $}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{$ modalCloseBtn $}</button>
+                    <button ng-click="modalConfirmAction($event)" type="button" class="btn btn-primary">{$ modalPrimaryBtn $}</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- modal %} -->
 </div>
 {% endblock %}
 
