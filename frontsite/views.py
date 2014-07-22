@@ -3,7 +3,7 @@ import json
 from random import randint
 from django.contrib import auth, messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
 from django.forms import model_to_dict
 from django.utils.translation import ugettext as _
 from django.utils import translation
@@ -20,6 +20,15 @@ from frontsite.decorators import anonymous_required, login_required
 from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm, RhymeForm, CommentForm
 from frontsite import models
 from frontsite import utils
+
+def typehead_search(request, query):
+    rhymes = models.Rhyme.objects.filter(Q(title__icontains=query) | Q(content__icontains=query))\
+                .annotate(vote_strength=Sum('votes__strength'))\
+                .order_by('-created')
+    print rhymes
+    return HttpResponse(json.dumps(
+        [model_to_dict(item) for item in rhymes]
+    ))
 
 def delete_comment(request, id):
     comment = models.Comment.objects.get(pk=id)
@@ -60,7 +69,7 @@ def rhyme_view(request, id):
 class Rhyme(FormView):
     template_name = 'frontsite/rhyme.html'
 
-    def find_data(self, category_id=None):
+    def find_data(self, category_id=None, search=None):
         if category_id is None:
             rhymes = models.Rhyme.objects.all()\
                 .annotate(vote_strength=Sum('votes__strength'))\
@@ -69,7 +78,8 @@ class Rhyme(FormView):
             rhymes = models.Rhyme.objects.filter(category=category_id)\
                 .annotate(vote_strength=Sum('votes__strength'))\
                 .order_by('-created')
-
+        if search is not None:
+            rhymes = rhymes.filter(Q(title__icontains=search) | Q(content__icontains=search))
         paginator = Paginator(rhymes, 10)
         page = self.request.GET.get('page')
         try:
@@ -128,10 +138,10 @@ class Rhyme(FormView):
             if self.kwargs.has_key('delete') and self.kwargs['delete'] == 'delete':
                 rhyme.delete()
                 return redirect(reverse('frontsite:index'))
-        by_category = None
+        by_category, search = (None, self.request.GET.get('search'))
         if self.kwargs.has_key('category_id'):
             by_category = self.kwargs['category_id']
-        rhymes = self.find_data(by_category)
+        rhymes = self.find_data(by_category, search)
         for rhymeitem in rhymes:
             setattr(rhymeitem, 'comments_count', len(rhymeitem.comments.all()))
         if self.request.is_ajax():
@@ -143,7 +153,8 @@ class Rhyme(FormView):
             'rhymes': rhymes,
             'rhymesAuthor': rhymesAuthor,
             'rhymesStored': rhymesStored,
-            'categories' : models.Category.objects.all()
+            'categories' : models.Category.objects.all(),
+            'search': search if search is not None else ''
         })
 
 class Category(FormView):
