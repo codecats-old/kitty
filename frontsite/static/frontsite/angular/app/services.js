@@ -10,7 +10,7 @@ kittyServices.
         });
         
         rhymeSearcher.initialize();
-        
+
         $('[name=search]').typeahead(null, {
             name: 'rhyme-search',
             displayKey: 'title',
@@ -18,7 +18,19 @@ kittyServices.
             source: rhymeSearcher.ttAdapter(),
             templates: {
                 suggestion: function (value) {
-                    return '<div><p>' + value.title + '</p><span><small>' + value.content + '</small></span></div>';
+                    var voteStrength = (value.vote_strength) ? value.vote_strength : '0';
+                    return '' +
+                        '<div>' +
+                            '<p>' +
+                                value.title +
+                            '</p>' +
+                            '<span><small class="text-muted">' +
+                                value.content.substr(0, 100) +
+                            '</small></span>' +
+                            '<small class="pull-right"> głosów</small><label class="badge pull-right">' +
+                                voteStrength +
+                             '</label>' +
+                        '</div>';
                 },
                 empty: [
                     '<div class="empty-message">',

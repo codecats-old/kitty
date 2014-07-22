@@ -4,8 +4,57 @@
   /* Controllers */
  
  kittyApp.
+ controller('PopoverCommentsCtrl', ['$scope', '$http',
+                                    function($scope, $http) {
+    $scope.popoverComments = function(e, rhymeId, url) {
+        $http.get(url).then(
+            function success (response) {
+                $scope.comments = response.data.data;
+                $('#popover-' + rhymeId).show('fast');
+                setTimeout(function () {$('#popover-' + rhymeId).hide('slow');}, 10000);
+            },
+            function failure (response) {
+
+            }
+        );
+    };
+    $scope.comments = [];
+ }]).
+ controller('StoreCtrl', ['$scope', '$http',
+                            function ($scope, $http) {
+    $scope.stores = [];
+    $scope.storeChange = function (e, afterUrl, afterLabel, index) {
+        e.preventDefault();
+        if (typeof $scope.stores[index] === 'undefined') {
+            $scope.stores[index] = {}
+            $scope.stores[index].url = e.target.href,
+            $scope.stores[index].label = e.target.innerHTML.trim();
+            $scope.stores[index].afterUrl = afterUrl;
+            $scope.stores[index].afterLabel = afterLabel;
+            $scope.stores[index].stateAfter = true;
+        }
+        var action = ($scope.stores[index].stateAfter === true) ? $scope.stores[index].url : $scope.stores[index].afterUrl;
+        $http.post(action).then(
+            function success (response) {
+                if ($scope.stores[index].stateAfter === true) {
+                    e.target.href = $scope.stores[index].afterUrl;
+                    e.target.innerHTML = $scope.stores[index].afterLabel;
+                } else {
+                    e.target.href = $scope.stores[index].url;
+                    e.target.innerHTML = $scope.stores[index].label;
+                }
+                $scope.stores[index].stateAfter = ! $scope.stores[index].stateAfter;
+            },
+            function failure (response) {
+
+            }
+        )
+
+    }
+
+ }]).
  controller('RhymeCtrl',['$scope', '$http',
-                       function RhymeListCtrl($scope, $http) {
+                            function RhymeListCtrl($scope, $http) {
     if (typeof $scope.rhymes === 'undefined') $scope.rhymes = [];
     $scope.formState = 'Dodawanie';
     var rhymes = $('[rhyme]');

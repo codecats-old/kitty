@@ -24,11 +24,21 @@ from frontsite import utils
 def typehead_search(request, query):
     rhymes = models.Rhyme.objects.filter(Q(title__icontains=query) | Q(content__icontains=query))\
                 .annotate(vote_strength=Sum('votes__strength'))\
-                .order_by('-created')
-    print rhymes
+                .order_by('-created')[:10]
     return HttpResponse(json.dumps(
-        [model_to_dict(item) for item in rhymes]
+        [dict(model_to_dict(item).items() + {'vote_strength': item.vote_strength}.items())  for item in rhymes]
     ))
+def comment_show(request, rhyme_id):
+    comments = models.Comment.objects.filter(rhyme_id=rhyme_id).order_by('-date')[:5]
+    data = []
+    for comment in comments:
+        model_items = model_to_dict(comment).items()
+        external_items = {'author_name': comment.author.user.username}.items()
+        data.append(dict(model_items + external_items))
+    return HttpResponse(json.dumps({
+        'sucess': True,
+        'data': data
+    }))
 
 def delete_comment(request, id):
     comment = models.Comment.objects.get(pk=id)
@@ -320,6 +330,8 @@ def rhyme_store(request, id):
     if not models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]):
         request.user.profile.stored_rhymes.add(rhyme)
         request.user.profile.save()
+    if request.is_ajax():
+        return HttpResponse(json.dumps({'success': True}))
     return redirect(reverse('frontsite:stored'))
 
 def rhyme_unstore(request, id):
@@ -327,6 +339,8 @@ def rhyme_unstore(request, id):
     if models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]):
         request.user.profile.stored_rhymes.remove(rhyme)
         request.user.profile.save()
+    if request.is_ajax():
+        return HttpResponse(json.dumps({'success': True}))
     return redirect(reverse('frontsite:stored'))
 
 def stored(request):

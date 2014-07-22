@@ -192,4 +192,7 @@ border-bottom-right-radius: 5px;
 .tt-suggestion p {
     margin: 0;
 }
+.tt-suggestion small {
+    font-size: .8em;
+}
 /* typehead %} */
