@@ -121,10 +121,13 @@
                                             <h3 class="popover-title">Najnowsze komentarze</h3>
                                             <div class="popover-content">
                                                 <div ng-repeat="comment in comments">
-                                                    <div class="row">
-                                                        {$ comment.content $}
-                                                        <span class="pull-right badge">{$ comment.author_name $}</span>
+                                                    <div class="row-fluid">
+                                                        <span class="col-md-8">
+                                                            {$ comment.content $}
+                                                        </span>
+                                                        <span class="col-md-4 badge">{$ comment.author_name $}</span>
                                                     </div>
+                                                    <hr>
                                                 </div>
                                             </div>
                                         </div>

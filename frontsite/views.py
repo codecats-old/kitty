@@ -33,11 +33,60 @@ def comment_show(request, rhyme_id):
     data = []
     for comment in comments:
         model_items = model_to_dict(comment).items()
-        external_items = {'author_name': comment.author.user.username}.items()
+        external_items = {
+            'author_name': comment.author.user.username
+        }.items()
         data.append(dict(model_items + external_items))
     return HttpResponse(json.dumps({
-        'sucess': True,
+        'success': True,
         'data': data
+    }))
+
+def comments_unread(request):
+    user = request.user.profile
+    comments = models.Comment.objects.all().filter(rhyme_author_saw=False)\
+        .filter(rhyme__author=user).exclude(author=user)[:10]
+    data = []
+    for comment in comments:
+        model_items = model_to_dict(comment).items()
+        external_items = {
+            'author_name': comment.author.user.username,
+            'rhyme_url': reverse('frontsite:rhyme_view', kwargs={'id': comment.rhyme.id}),
+            'rhyme_title': comment.rhyme.title,
+            'date': str(comment.date)
+        }.items()
+        data.append(dict(model_items + external_items))
+    return HttpResponse(json.dumps({
+        'success': True,
+        'data': data,
+        'count': len(comments)
+    }))
+def comments_mark_as_read(request, rhyme_id):
+    comments = []
+    profile = request.user.profile
+    rhyme = models.Rhyme.objects.get(pk=rhyme_id)
+    if rhyme.author.pk == profile.pk:
+        comments = models.Comment.objects.all().filter(rhyme__id=rhyme_id)
+        for comment in comments:
+            comment.rhyme_author_saw = True
+            comment.save()
+    return HttpResponse(json.dumps({
+        'success': True,
+        'count': len(comments)
+    }))
+
+def comments_mark_as_read_json(request):
+    profile = request.user.profile
+    comments = json.loads(request.body)
+    for comment_data in comments:
+        comment = models.Comment.objects.get(pk=comment_data[u'id'])
+        if comment.rhyme.author.pk == profile.pk:
+            comment.rhyme_author_saw = True
+            comment.save()
+
+    return HttpResponse(json.dumps({
+        'success': True,
+        'count': len(comments)
     }))
 
 def delete_comment(request, id):
@@ -69,6 +118,7 @@ def rhyme_view(request, id):
             comment.save()
             return redirect(reverse('frontsite:rhyme_view', kwargs={'id': id}))
     else:
+        comments_mark_as_read(request, rhyme_id=id)
         form = CommentForm()
     return render(request, 'frontsite/rhyme_view.html', {
         'rhyme': rhyme,

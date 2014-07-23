@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load filters %}
 <!DOCTYPE html>
-<html ng-app="kittyApp">
+<html ng-app="kittyApp" ng-controller="RootCtrl">
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Wierszyki{% endblock %}</title>
@@ -127,7 +127,34 @@
                                 <a href="{% url 'frontsite:registration' %}">Rejestracja <i class="fa fa-long-arrow-right"></i></a>
                             </li>
                         {% else %}
-                            <li><a href="{% url 'frontsite:user' request.user.id %}">Profil {{ request.user.username }} <i class="fa fa-user"></i></a></li>
+                            <li>
+                                <a href="{% url 'frontsite:user' request.user.id %}">
+                                    <span
+                                            id="trigger-comments-unread"
+                                            class="badge"
+                                    >
+                                        {$ unreadCommentsCount $}
+                                    </span>
+                                    Profil {{ request.user.username }} <i class="fa fa-user"></i>
+                                </a>
+                                <div id="popover-comments-unread" class="popover">
+                                    <div class="popover-content">
+                                        <div ng-repeat="comment in unreadComments">
+                                            <div class="row-fluid">
+                                                <div class="col-md-12">
+                                                    <a href="{$ comment.rhyme_url $}">{$ comment.rhyme_title $}</a>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    {$ comment.content $}
+                                                </div>
+                                                <div class="col-md-4"><div class="badge">{$ comment.author_name $}</div></div>
+                                                <hr>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
                             <li><a href="{% url 'frontsite:logout' %}">Wyloguj się <i class="fa fa-long-arrow-right"></i></a></li>
                         {% endif %}
                     </ul>

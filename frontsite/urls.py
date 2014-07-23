@@ -4,6 +4,9 @@ from django.contrib.auth.views import logout
 
 urlpatterns = patterns('',
    url(r'^$', views.Rhyme.as_view(), name='index'),
+   url(r'^comment-unread/$', views.comments_unread, name='comment_unread'),
+   url(r'^comment-mark-as-read/(?P<rhyme_id>)/$', views.comments_mark_as_read, name='comment_mark_as_read'),
+   url(r'^comment-mark-as-read/json$', views.comments_mark_as_read_json, name='comment_mark_as_read_json'),
    url(r'^comment-show/(?P<rhyme_id>\d+)$', views.comment_show, name='comment_show'),
    url(r'^category-(?P<category_id>\d+)$', views.Rhyme.as_view(), name='rhymes_by_category'),
    url(r'^search-rhymes$', views.Rhyme.as_view(), name='rhymes_search'),
