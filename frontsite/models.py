@@ -13,20 +13,20 @@ class Avatar(models.Model):
 class VoteUserProfile(models.Model):
     user_profile = models.ForeignKey(UserProfile, related_name='votes')
     author = models.ForeignKey(UserProfile, related_name='voted')
-    date = models.DateTimeField(auto_now=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
     strength = models.PositiveSmallIntegerField(default=1, blank=True)
 
 class Category(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True)
     def __unicode__(self):
         return self.title
 
 class Rhyme(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
-    created = models.DateTimeField(auto_now=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, blank=True)
     author = models.ForeignKey(UserProfile, related_name='created_rhymes')
     profiles = models.ManyToManyField(UserProfile, related_name='stored_rhymes')
     category = models.ForeignKey(Category, null=True, blank=True, related_name='rhymes')
@@ -39,7 +39,7 @@ class VoteRhyme(models.Model):
 
 class Comment(models.Model):
     content = models.TextField()
-    date = models.DateTimeField(auto_now=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
     rhyme = models.ForeignKey(Rhyme, related_name='comments')
     rhyme_author_saw = models.BooleanField(default=False)
     author = models.ForeignKey(UserProfile, related_name='commented_rhymes')

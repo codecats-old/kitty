@@ -70,12 +70,26 @@
                                 <a href="{% url 'frontsite:user' rhyme.author.user.id %}" class="">{{ rhyme.author.user.username }}</a>
                             </div>
                             <a
+                                    name="trigger-vote-{{ rhyme.id }}"
                                     ng-click="vote($event)"
+                                    ng-mouseover="showVoters($event, {{ rhyme.id }})"
                                     class="btn btn-xs"
                                     href="{% url 'frontsite:vote-rhyme' rhyme.id %}"
                             >
                                 Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
                             </a>
+                            <div id="popover-vote-{{ rhyme.id }}" class="popover">
+                                <div class="popover-content">
+                                    <div ng-repeat="voter in voters">
+                                        <div class="row-fluid">
+                                            <div class="col-md-12">
+                                                {$ voter.author_name $} +{$ voter.strength $}
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                </div>
+                            </div>
 
                             {% if request.user.is_authenticated == True %}
                                 <div class="center-block" ng-controller="StoreCtrl">

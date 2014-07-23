@@ -28,13 +28,29 @@ def typehead_search(request, query):
     return HttpResponse(json.dumps(
         [dict(model_to_dict(item).items() + {'vote_strength': item.vote_strength}.items())  for item in rhymes]
     ))
+
+def voters(request, rhyme_id):
+    votes = models.VoteRhyme.objects.all().filter(rhyme__id=rhyme_id)
+    data = []
+    for vote in votes:
+        model_items = model_to_dict(vote).items()
+        external_items = {
+            'author_name': vote.author.user.username
+        }.items()
+        data.append(dict(model_items + external_items))
+    return HttpResponse(json.dumps({
+        'success': True,
+        'data': data
+    }))
+
 def comment_show(request, rhyme_id):
     comments = models.Comment.objects.filter(rhyme_id=rhyme_id).order_by('-date')[:5]
     data = []
     for comment in comments:
         model_items = model_to_dict(comment).items()
         external_items = {
-            'author_name': comment.author.user.username
+            'author_name': comment.author.user.username,
+            'date': str(comment.date)
         }.items()
         data.append(dict(model_items + external_items))
     return HttpResponse(json.dumps({

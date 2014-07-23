@@ -9,7 +9,6 @@
      var updateCommentStatus = function () {
         $http.get('/comment-unread').then(
             function success(response) {
-                 console.log(response.data);
                  $scope.unreadCommentsCount = response.data.count;
                  $scope.unreadComments = response.data.data;
             },
@@ -172,6 +171,29 @@
  }]).
  controller('VoteRhymeCtrl', ['$scope', '$http',
                         function VoteRhymeCtrl($scope, $http) {
+    var initPopover = function (id) {
+        var pop = $('[name=trigger-vote-' + id + ']');
+        pop.popover({
+            html : true,
+            trigger: "hover",
+            placement: 'left',
+
+            content: function(e) {
+                return $('#popover-vote-' + id).html();
+            }
+        });
+    };
+
+    $scope.showVoters = function (e, rhymeId) {
+        $http.get('/voters/' + rhymeId).then(
+            function success(response) {
+                $scope.voters = response.data.data;
+                initPopover(rhymeId);
+            },
+            function failure() {}
+        );
+    }
+
     $scope.vote = function (e) {
         e.preventDefault();
         $http.get(e.currentTarget.href).success(function (data) {
