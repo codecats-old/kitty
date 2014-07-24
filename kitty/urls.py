@@ -9,6 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^', include('frontsite.urls', namespace='frontsite')),
     url(r'^chat/', include('chat.urls', namespace='chat')),
+    url(r'^pdf/', include('pdf.urls', namespace='pdf')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

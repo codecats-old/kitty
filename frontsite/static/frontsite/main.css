@@ -196,3 +196,9 @@ border-bottom-right-radius: 5px;
     font-size: .8em;
 }
 /* typehead %} */
+
+.badge .info-badge{
+    color: red;
+    position: relative;
+    font-size: .8em
+}

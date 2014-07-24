@@ -15,3 +15,11 @@ django-debug-toolbar==1.2
 django-socketio==0.3.9
 gevent-socketio==0.2.1
 gevent-websocket==0.9.3
+django-easy-pdf
+git+https://github.com/chrisglass/xhtml2pdf.git
+coverage==3.5
+html5lib==0.90
+httplib2==0.7.6
+nose==1.0.0
+pyPdf2==1.19
+reportlab==2.5

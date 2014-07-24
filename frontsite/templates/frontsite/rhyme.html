@@ -52,6 +52,11 @@
                             </a>
                             <small> {{ rhyme.category.title }}</small>
                         </h2>
+                        <div class="pull-right">
+                            <a href="{% url 'pdf:index' rhyme.id %}" class="btn btn-xs btn-success" target="_blank">
+                                <i class="fa fa-file-pdf-o"></i>
+                            </a>
+                        </div>
                     </div>
                     <p>{{ rhyme.content|safe|linebreaks }}</p>
                     <hr>
@@ -73,7 +78,13 @@
                                     name="trigger-vote-{{ rhyme.id }}"
                                     ng-click="vote($event)"
                                     ng-mouseover="showVoters($event, {{ rhyme.id }})"
-                                    class="btn btn-xs"
+                                    class="btn btn-xs
+                                        {% for vote in rhyme.votes.all %}
+                                            {% if vote.author.id == request.user.profile.id %}
+                                                text-muted
+                                            {% endif %}
+                                        {% endfor %}
+                                    "
                                     href="{% url 'frontsite:vote-rhyme' rhyme.id %}"
                             >
                                 Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
@@ -83,7 +94,7 @@
                                     <div ng-repeat="voter in voters">
                                         <div class="row-fluid">
                                             <div class="col-md-12">
-                                                {$ voter.author_name $} +{$ voter.strength $}
+                                                {$ voter.author_name $} {$ voter.strength|addplus $}
                                             </div>
                                         </div>
                                         <hr>
@@ -99,11 +110,11 @@
                                             class="btn btn-success fa fa-save"
                                             href="{% url 'frontsite:rhyme-store' rhyme.id %}"
                                     >
-                                        Zapisz
+                                        Dodaj do ulubionych
                                     </a>
                                 {% else %}
                                     <a
-                                            ng-click="storeChange($event, '{% url 'frontsite:rhyme-store' rhyme.id %}', ' Zapisz', {{ forloop.counter }})"
+                                            ng-click="storeChange($event, '{% url 'frontsite:rhyme-store' rhyme.id %}', ' Dodaj do ulubionych', {{ forloop.counter }})"
                                             class="btn btn-success fa fa-save"
                                             href="{% url 'frontsite:rhyme-unstore' rhyme.id %}"
                                     >

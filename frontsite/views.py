@@ -33,7 +33,7 @@ def count_author_rhyme_votes(request):
     author = request.user.profile
     authors_rhymes = models.Rhyme.objects.all().filter(author=author)
     strength = authors_rhymes.aggregate(vote_strength=Sum('votes__strength'))
-    rhymes = authors_rhymes.annotate(vote_strength=Sum('votes__strength'))
+    rhymes = authors_rhymes.annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:10]
     data = []
     for rhyme in rhymes:
         model_items = model_to_dict(rhyme).items()

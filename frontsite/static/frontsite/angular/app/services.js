@@ -27,8 +27,9 @@ kittyServices.
                             '<span><small class="text-muted">' +
                                 value.content.substr(0, 100) +
                             '</small></span>' +
-                            '<small class="pull-right"> głosów</small><label class="badge pull-right">' +
-                                voteStrength +
+                            '<small class="pull-right"> głosów</small>' +
+                            '<label class="badge pull-right">' +
+                                '+' + voteStrength +
                              '</label>' +
                         '</div>';
                 },

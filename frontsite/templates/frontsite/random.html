@@ -13,7 +13,7 @@
                         {% if rhyme in request.user.profile.stored_rhymes.all %}
                             <a href="{% url 'frontsite:rhyme-unstore' rhyme.id %}" class="pull-left btn btn-success">Wypisz się</a>
                         {% else %}
-                            <a href="{% url 'frontsite:rhyme-store' rhyme.id %}" class="pull-left btn btn-success">Zapisz</a>
+                            <a href="{% url 'frontsite:rhyme-store' rhyme.id %}" class="pull-left btn btn-success">Dodaj do ulubionych</a>
                         {% endif %}
                     {% endif %}
                 {% else %}

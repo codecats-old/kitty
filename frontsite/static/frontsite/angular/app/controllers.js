@@ -40,6 +40,18 @@
             return $('#popover-comments-unread').html();
         }
     });
+    $('#trigger-comments-votes').popover({
+        html : true,
+        trigger: "click hover",
+        placement: 'bottom',
+        delay: {
+           show: "200",
+           hide: "500"
+        },
+        content: function(e) {
+            return $('#popover-comments-votes').html();
+        }
+    });
     updateCommentStatus();
     updateVotesStatus();
     $('#trigger-comments-unread').click(function(e){e.preventDefault();});
@@ -189,19 +201,21 @@
         pop.popover({
             html : true,
             trigger: "hover",
+            delay: 300,
             placement: 'left',
-
             content: function(e) {
                 return $('#popover-vote-' + id).html();
             }
         });
+        return pop;
     };
 
     $scope.showVoters = function (e, rhymeId) {
+        initPopover(rhymeId);
         $http.get('/voters/' + rhymeId).then(
             function success(response) {
                 $scope.voters = response.data.data;
-                initPopover(rhymeId);
+
             },
             function failure() {}
         );

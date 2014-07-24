@@ -35,10 +35,29 @@
                                 id="trigger-comments-votes"
                                 class="badge"
                         >
-                            {$ commentsVotesStrength $}
+                            <span class="info-badge">oceny</span>
+                            {$ commentsVotesStrength|addplus $}
                         </span>
                     </a>
                 </div>
+                                <div id="popover-comments-votes" class="popover">
+                                    <div class="popover-content">
+                                        <div ng-repeat="comment in commentsVotes">
+                                            <div class="row-fluid">
+                                                <div class="col-md-8">
+                                                    {$ comment.title $}
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="badge">
+                                                        {$ comment.vote_strength|addplus $}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </div>
                 <!-- Collection of nav links, forms, and other content for toggling -->
                 <div id="navbarCollapse" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
@@ -94,7 +113,7 @@
                         {% url 'frontsite:stored' as currentUrl %}
                         <li {% if request.get_full_path == currentUrl %}class="active"{% endif %}>
                             <a class="btn" href="{% url 'frontsite:stored' %}">
-                                <i class="fa fa-book"></i>Zapisane <span class="badge">{{ request.user.profile.stored_rhymes.count }}</span>
+                                <i class="fa fa-book"></i>Ulubione <span class="badge">{{ request.user.profile.stored_rhymes.count }}</span>
                             </a>
                         </li>
                         <li>
@@ -141,6 +160,7 @@
                                             id="trigger-comments-unread"
                                             class="badge"
                                     >
+                                        <span class="info-badge">kometarze</span>
                                         {$ unreadCommentsCount $}
                                     </span>
                                     Profil {{ request.user.username }} <i class="fa fa-user"></i>

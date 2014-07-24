@@ -1,0 +1,22 @@
+{% extends "easy_pdf/base.html" %}
+{% block extra_style %}
+    <style type="text/css">
+        @font-face { font-family: Lato; src: url(sansation_light.woff); }
+        body {
+            font-family: "Lato", "Helvetica", "sans-serif";
+            color: #333333;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="content">
+        łóżąćęłń
+        {% for rhyme in rhymes %}
+            <h1>{{ rhyme.title }}</h1>
+            <article>
+                {{ rhyme.content|safe }}
+            </article>
+        {% endfor %}
+    </div>
+{% endblock %}
