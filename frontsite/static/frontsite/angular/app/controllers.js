@@ -7,15 +7,27 @@
  controller('RootCtrl', ['$scope', '$http',
                             function($scope, $http) {
      var updateCommentStatus = function () {
-        $http.get('/comment-unread').then(
-            function success(response) {
-                 $scope.unreadCommentsCount = response.data.count;
-                 $scope.unreadComments = response.data.data;
-            },
-            function failure() {}
-        );
-     }
-     $scope.unreadCommentsCount = 0;
+            $http.get('/comment-unread').then(
+                function success(response) {
+                     $scope.unreadCommentsCount = response.data.count;
+                     $scope.unreadComments = response.data.data;
+                },
+                function failure() {}
+            );
+         },
+         updateVotesStatus = function () {
+            $http.get('/count-author-rhyme-votes').then(
+                function success(response) {
+                     $scope.commentsVotesStrength = response.data.strength;
+                     $scope.commentsVotes = response.data.data;
+                },
+                function failure() {}
+            );
+         };
+     $scope.unreadCommentsCount = '-';
+     $scope.commentsVotesStrength = '-';
+     $scope.unreadComments = [];
+     $scope.commentsVotes = [];
      $('#trigger-comments-unread').popover({
         html : true,
         trigger: "click hover",
@@ -29,6 +41,7 @@
         }
     });
     updateCommentStatus();
+    updateVotesStatus();
     $('#trigger-comments-unread').click(function(e){e.preventDefault();});
 
     $scope.$on('commentsSaw', function (e, comments) {

@@ -5,6 +5,7 @@ from django.contrib.auth.views import logout
 urlpatterns = patterns('',
    url(r'^$', views.Rhyme.as_view(), name='index'),
    url(r'^voters/(?P<rhyme_id>\d+)/$', views.voters, name='voters'),
+   url(r'^count-author-rhyme-votes/$', views.count_author_rhyme_votes, name='count_author_rhyme_votes'),
    url(r'^comment-unread/$', views.comments_unread, name='comment_unread'),
    url(r'^comment-mark-as-read/(?P<rhyme_id>)/$', views.comments_mark_as_read, name='comment_mark_as_read'),
    url(r'^comment-mark-as-read/json$', views.comments_mark_as_read_json, name='comment_mark_as_read_json'),

@@ -29,6 +29,24 @@ def typehead_search(request, query):
         [dict(model_to_dict(item).items() + {'vote_strength': item.vote_strength}.items())  for item in rhymes]
     ))
 
+def count_author_rhyme_votes(request):
+    author = request.user.profile
+    authors_rhymes = models.Rhyme.objects.all().filter(author=author)
+    strength = authors_rhymes.aggregate(vote_strength=Sum('votes__strength'))
+    rhymes = authors_rhymes.annotate(vote_strength=Sum('votes__strength'))
+    data = []
+    for rhyme in rhymes:
+        model_items = model_to_dict(rhyme).items()
+        external_items = {
+            'vote_strength': rhyme.vote_strength if rhyme.vote_strength is not None else 0
+        }.items()
+        data.append(dict(model_items + external_items))
+    return HttpResponse(json.dumps({
+        'success': True,
+        'strength': strength['vote_strength'],
+        'data': data
+    }))
+
 def voters(request, rhyme_id):
     votes = models.VoteRhyme.objects.all().filter(rhyme__id=rhyme_id)
     data = []
