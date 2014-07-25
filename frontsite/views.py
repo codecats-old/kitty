@@ -29,11 +29,13 @@ def typehead_search(request, query):
         [dict(model_to_dict(item).items() + {'vote_strength': item.vote_strength}.items())  for item in rhymes]
     ))
 
+@login_required
 def count_author_rhyme_votes(request):
     author = request.user.profile
     authors_rhymes = models.Rhyme.objects.all().filter(author=author)
     strength = authors_rhymes.aggregate(vote_strength=Sum('votes__strength'))
-    rhymes = authors_rhymes.annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:10]
+    rhymes = authors_rhymes.annotate(vote_strength=Sum('votes__strength'))\
+                .filter(vote_strength__gt=0).order_by('-vote_strength')[:10]
     data = []
     for rhyme in rhymes:
         model_items = model_to_dict(rhyme).items()
@@ -76,6 +78,7 @@ def comment_show(request, rhyme_id):
         'data': data
     }))
 
+@login_required
 def comments_unread(request):
     user = request.user.profile
     comments = models.Comment.objects.all().filter(rhyme_author_saw=False)\
@@ -195,6 +198,7 @@ class Rhyme(FormView):
             rhyme = form.save(commit=False)
             if self.kwargs.has_key('id'):
                 rhyme.id = self.kwargs['id']
+                rhyme.created = models.Rhyme.objects.get(pk=self.kwargs['id']).created
             rhyme.author = self.request.user.profile
             rhyme.save()
             rhyme.profiles.add(self.request.user.profile)

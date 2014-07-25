@@ -26,7 +26,7 @@ class Category(models.Model):
 class Rhyme(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
-    created = models.DateTimeField(auto_now_add=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(UserProfile, related_name='created_rhymes')
     profiles = models.ManyToManyField(UserProfile, related_name='stored_rhymes')
     category = models.ForeignKey(Category, null=True, blank=True, related_name='rhymes')

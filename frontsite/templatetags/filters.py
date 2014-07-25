@@ -5,6 +5,22 @@ import re
 
 register = Library()
 
+@register.filter(name='shorter')
+def shorter(value):
+    #return value
+    short = value.split('<p>')
+    # cut text height (rows)
+    short = short[:5]
+    short = '<p>'.join(short)
+    short = short.split('</p>\n')
+    #cut text width (cols)
+    for i, value in enumerate(short):
+        #be careful with too low limit (base64)
+        short[i] = value[:1000000]
+    short = '</p>\n'.join(short)
+
+    return short
+
 @register.filter(name='ngmodel')
 def ng_model(value, prefix='fields.'):
     attrs = value.field.widget.attrs

@@ -120,6 +120,7 @@
  controller('RhymeCtrl',['$scope', '$http',
                             function RhymeListCtrl($scope, $http) {
     if (typeof $scope.rhymes === 'undefined') $scope.rhymes = [];
+    if (typeof $scope.fields === 'undefined') $scope.fields = {};
     $scope.formState = 'Dodawanie';
     var rhymes = $('[rhyme]');
     rhymes.each(function(it) {
@@ -134,7 +135,6 @@
 
     $scope.remove = function remove (e, loopCounter) {
         e.preventDefault();
-        if (typeof $scope.fields === 'undefined') $scope.fields = {};
         $scope.modalTitle = 'Usunąć wiersz "' + $scope.rhymes[loopCounter].title + '"?';
         $scope.modalBody = 'Usunięcie danych jest nieodwracalne, potwierdź decyzję';
         $scope.modalPrimaryBtn = 'Usuń';
@@ -155,7 +155,6 @@
 
     $scope.edit = function edit (e, loopCounter) {
         e.preventDefault();
-        if (typeof $scope.fields === 'undefined') $scope.fields = {};
         $scope.formState = 'Edycja';
         $scope.formAction = e.currentTarget.href;
 
@@ -171,7 +170,7 @@
     };
 
 	$scope.add = function add (e) {
-        if (typeof $scope.fields === 'undefined') $scope.fields = {};
+
         $scope.errors = {};
         $scope.fields.content = tinyMCE.activeEditor.getContent();
         $http.
@@ -192,6 +191,18 @@
 
                 }
             );
+    };
+    $scope.close = function close (e) {
+        e.preventDefault();
+        $scope.formAction = '';
+        $scope.formState = 'Dodawanie';
+        $scope.fields.title = '';
+        $scope.fields.content = ''
+        tinyMCE.activeEditor.setContent('', {format : 'raw'});
+        $scope.fields.category = '';
+        if (true === angular.element('#demo').hasClass('in')){
+            angular.element('button[data-target=#demo]').click();
+        }
     };
  }]).
  controller('VoteRhymeCtrl', ['$scope', '$http',
