@@ -6,7 +6,9 @@ $(document).ready(function () {
     connectBtn.bind('click', function () {
         $(this).hide();
         disconnectBtn.show();
-        var socket  = new WebSocket('ws://' + window.location.hostname + ':1025/ws'),
+
+       // var socket  = new WebSocket('ws://' + window.location.hostname + ':1025/ws'),
+       var socket  = new WebSocket('ws://37.28.156.222:1025/ws'),
             board   = $('#message_list'),
             input   = $('#send-text'),
             sendBtn = $('#send-button'),

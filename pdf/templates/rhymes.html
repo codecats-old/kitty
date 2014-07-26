@@ -1,22 +1,45 @@
 {% extends "easy_pdf/base.html" %}
 {% block extra_style %}
     <style type="text/css">
-        @font-face { font-family: Lato; src: url(sansation_light.woff); }
+        @font-face { font-family: Lato; src: url('{{ STATIC_DIR }}/RatInfestedMailbox.ttf'); }
+        @font-face { font-family: Normal; src: url('{{ STATIC_DIR }}/Chunk.ttf'); }
+        @font-face { font-family: Roboto; src: url('{{ STATIC_DIR }}/Roboto/Roboto-Regular.ttf'); }
         body {
-            font-family: "Lato", "Helvetica", "sans-serif";
+            font-family: "Roboto", "Normal", "Lato", "Helvetica", "sans-serif";
             color: #333333;
+            text-align:center;
+
+        }
+        h1 {
+            font-family: "Normal", "Lato", "Helvetica", "sans-serif";
+        }
+        .rhyme * {
+            border: 0 px solid black;
+        }
+        .watermark {
+           background-image: url({{ STATIC_DIR }}/watermark.jpg);
+           background-position: center center;
+           background-size: 100%; /* CSS3 only, but not really necessary if you make a large enough image */
+           position: absolute;
+           width: 100%;
+           height: 100%;
+           margin: 0;
+           z-index: 10;
         }
     </style>
 {% endblock %}
 
 {% block content %}
-    <div id="content">
-        łóżąćęłń
+    <div id="content" class="watermark">
         {% for rhyme in rhymes %}
-            <h1>{{ rhyme.title }}</h1>
-            <article>
-                {{ rhyme.content|safe }}
-            </article>
+            <div class="rhyme">
+                <h1>{{ rhyme.title }}</h1>
+                <h3>{{ rhyme.category.title }}</h3>
+                <div>
+                    {{ rhyme.content|safe }}
+                </div>
+            </div>
+            <hr>
         {% endfor %}
     </div>
 {% endblock %}

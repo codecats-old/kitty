@@ -82,9 +82,9 @@ class SetVarNode(template.Node):
 
     def render(self, context):
         context[self.var_name] = int(self.new_val)
-        return u''
+        return u""
 
-class SetVarNode(template.Node):
+class SetVarNodeString(template.Node):
     def __init__(self, new_val, var_name):
         self.new_val = new_val
         self.var_name = var_name
@@ -93,7 +93,7 @@ class SetVarNode(template.Node):
         return ''
 
 @register.tag
-def setvar(parser,token):
+def set_var_string(parser,token):
     # This version uses a regular expression to parse tag contents.
     try:
         # Splitting by None == splitting by spaces.

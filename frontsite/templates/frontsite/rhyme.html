@@ -35,6 +35,7 @@
         <div><!-- {%div wrapper -->
         {% with 0 as scarfording %}
         {% for rhyme in rhymes %}
+
                 {% if scarfording == 0 %}
                     <div class="row">
                 {% endif %}
@@ -195,17 +196,11 @@
                         </div>
                     </div>
                 </div>
-                {% if scarfording == 2 %}
+                {% if scarfording == 2 or forloop.last %}
                     </div>
                     {% set_int_var 0 as scarfording %}
                 {% endif %}
-
-
         {% endfor %}
-            <!-- close row if already opened -->
-            {% if scarfording > 0 and scarfording < 2 %}
-                </div>
-            {% endif %}
         {% endwith %}
         </div><!-- div wrapper %}-->
         <div class="row">

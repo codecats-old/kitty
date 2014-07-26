@@ -1,22 +1,57 @@
 {% extends 'layout.html' %}
 {% load staticfiles %}
+{% load filters %}
 {% block content %}
     <div class="row">
-        <div class="col-md-2"></div>
+
+        <div class="col-md-1"></div>
         <div class="col-md-8  text-center">
-            <div class="row">
-                {% for rhyme in request.user.profile.stored_rhymes.all %}
-                    <div class="col-md-4 well">
-                        <h3>{{ rhyme.title }}</h3>
-                        <h4><small>{{ rhyme.category.title }}</small></h4>
-                        {{ rhyme.content|linebreaks }}
+            <div class="row list-unstyled">
+            {% with 0 as scarfording %}
+            {% for rhyme in request.user.profile.stored_rhymes.all %}
+
+                {% if scarfording == 0 %}>
+                    <div class="row">
+                {% endif %}
+                {% ++ scarfording %}
+
+                    <div class="col-md-5 col-md-offset-1 well rhyme">
+                        <h3>
+                            <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
+                                {{ rhyme.title }}
+                            </a>
+                        </h3>
+                        {% if rhyme.category %}
+                            <h4>
+                                <small><a href="{% url 'frontsite:rhymes_by_category' rhyme.category.id %}">{{ rhyme.category.title }}</a></small>
+                            </h4>
+                        {% endif %}
+                        <div class="pull-right">
+                            <a href="{% url 'pdf:index' rhyme.id %}" class="btn btn-xs btn-success" target="_blank">
+                                <i class="fa fa-file-pdf-o"></i>
+                            </a>
+                        </div>
+                        {{ rhyme.content|safe|linebreaks }}
                         <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
                         <a href="{% url 'frontsite:rhyme-unstore' rhyme.id %}" class="pull-left btn btn-success">Wypisz się</a>
                     </div>
-                {% endfor %}
+                {% if scarfording == 2 or forloop.last %}
+                    </div>
+                    {% set_int_var 0 as scarfording %}
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
             </div>
         </div>
-        <div class="col-md-2"></div>
+        <div class="col-md-3 text-center">
+            <br>
+            <div class=" btn-group-vertical well">
+                <label class="label label-default">Do PDF <i class="fa fa-file-pdf-o"></i></label>
+                <a class="btn btn-default disabled">Zaznaczone</a>
+                <a class="btn btn-default">Ulubione</a>
+                <a target="_blank" href="{% url 'pdf:all' %}" class="btn btn-default">Wszystko <i class="fa fa-external-link"></i></a>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
