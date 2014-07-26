@@ -47,9 +47,9 @@
             <br>
             <div class=" btn-group-vertical well">
                 <label class="label label-default">Do PDF <i class="fa fa-file-pdf-o"></i></label>
-                <a class="btn btn-default disabled">Zaznaczone</a>
-                <a class="btn btn-default">Ulubione</a>
-                <a target="_blank" href="{% url 'pdf:all' %}" class="btn btn-default">Wszystko <i class="fa fa-external-link"></i></a>
+                <a class="btn btn-default">Zaznacz</a>
+                <a target="_blank" href="{% url 'pdf:favorite' 'favorite' %}" class="btn btn-default">Ulubione <i class="fa fa-external-link"></i></a>
+                <a target="_blank" href="{% url 'pdf:all' 'all' %}" class="btn btn-default">Wszystko <i class="fa fa-external-link"></i></a>
             </div>
         </div>
     </div>

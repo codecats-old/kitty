@@ -30,6 +30,9 @@ class ExporterPDFView(PDFTemplateView):
     def get_context_data(self, *args, **kwargs):
         if kwargs.has_key('rhyme_id'):
             kwargs['rhymes'] = [frontsite.models.Rhyme.objects.get(pk=kwargs['rhyme_id'])]
-        else:
-            kwargs['rhymes'] = frontsite.models.Rhyme.objects.all()
+        elif kwargs.has_key('context'):
+            if kwargs['context'] == 'all':
+                kwargs['rhymes'] = frontsite.models.Rhyme.objects.all()
+            elif kwargs['context'] == 'favorite':
+                kwargs['rhymes'] = self.request.user.profile.stored_rhymes.all()
         return super(ExporterPDFView, self).get_context_data(pagesize="A4", title="PDF", **kwargs)

@@ -13,26 +13,20 @@
         h1 {
             font-family: "Normal", "Lato", "Helvetica", "sans-serif";
         }
-        .rhyme * {
-            border: 0 px solid black;
-        }
         .watermark {
-           background-image: url({{ STATIC_DIR }}/watermark.jpg);
-           background-position: center center;
-           background-size: 100%; /* CSS3 only, but not really necessary if you make a large enough image */
-           position: absolute;
-           width: 100%;
-           height: 100%;
-           margin: 0;
-           z-index: 10;
+            position: fixed;
+            padding: 50%;
+            *margin: 0;
+            z-index: -1;
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <div id="content" class="watermark">
+        <img src="{{ STATIC_DIR }}/watermark.jpg" class="watermark" />
         {% for rhyme in rhymes %}
-            <div class="rhyme">
+            <div>
                 <h1>{{ rhyme.title }}</h1>
                 <h3>{{ rhyme.category.title }}</h3>
                 <div>
