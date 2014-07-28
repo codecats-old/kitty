@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load filters %}
 {% block content %}
-    <div class="row">
+    <div class="row" ng-controller="ExportCtrl">
 
         <div class="col-md-1"></div>
         <div class="col-md-8  text-center">
@@ -55,5 +55,7 @@
     </div>
 {% endblock %}
 
-{% block javascript-custom %}
+ {% block javascript-custom %}
+<script type="text/javascript"
+	src="{% static 'frontsite/angular/app/stored/controllers.js' %}"></script>
 {% endblock %}
