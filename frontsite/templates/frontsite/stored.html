@@ -15,26 +15,33 @@
                 {% endif %}
                 {% ++ scarfording %}
 
-                    <div class="col-md-5 col-md-offset-1 well rhyme">
-                        <h3>
+                    <article class="col-md-5 col-md-offset-1 well rhyme">
+                        <h3 data-toggle="collapse" href="[name=collapsible-content]">
                             <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
                                 {{ rhyme.title }}
                             </a>
                         </h3>
-                        {% if rhyme.category %}
-                            <h4>
-                                <small><a href="{% url 'frontsite:rhymes_by_category' rhyme.category.id %}">{{ rhyme.category.title }}</a></small>
-                            </h4>
-                        {% endif %}
-                        <div class="pull-right">
-                            <a href="{% url 'pdf:index' rhyme.id %}" class="btn btn-xs btn-success" target="_blank">
-                                <i class="fa fa-file-pdf-o"></i>
-                            </a>
+                        <div class="checkbox pull-left" name="export-checkbox">
+                            <label>
+                                <input select-name='rhymeIds' name='rhymeIds[]' value='{{ rhyme.id }}' type="checkbox" />Zaznacz
+                            </label>
                         </div>
-                        {{ rhyme.content|safe|linebreaks }}
-                        <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
-                        <a href="{% url 'frontsite:rhyme-unstore' rhyme.id %}" class="pull-left btn btn-success">Wypisz się</a>
-                    </div>
+                        <div name="collapsible-content" class="panel-collapse collapse in">
+                            {% if rhyme.category %}
+                                <h4>
+                                    <small><a href="{% url 'frontsite:rhymes_by_category' rhyme.category.id %}">{{ rhyme.category.title }}</a></small>
+                                </h4>
+                            {% endif %}
+                            <div class="pull-right">
+                                <a href="{% url 'pdf:index' rhyme.id %}" class="btn btn-xs btn-success" target="_blank">
+                                    <i class="fa fa-file-pdf-o"></i>
+                                </a>
+                            </div>
+                            {{ rhyme.content|safe|linebreaks }}
+                            <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
+                            <a href="{% url 'frontsite:rhyme-unstore' rhyme.id %}" class="pull-left btn btn-success">Wypisz się</a>
+                        </div>
+                    </article>
                 {% if scarfording == 2 or forloop.last %}
                     </div>
                     {% set_int_var 0 as scarfording %}
@@ -47,7 +54,20 @@
             <br>
             <div class=" btn-group-vertical well">
                 <label class="label label-default">Do PDF <i class="fa fa-file-pdf-o"></i></label>
-                <a class="btn btn-default">Zaznacz</a>
+                <a
+                    ng-click="exportMode()"
+                    id='exportBtn'
+                    class="btn btn-default"
+                >
+                        {$ selectModeBtn $}
+                </a>
+                <a
+                    ng-click="cancelExport($event)"
+                    id='cancelBtn'
+                    class="btn btn-default disabled"
+                >
+                    {$ cancelBtn $}
+                </a>
                 <a target="_blank" href="{% url 'pdf:favorite' 'favorite' %}" class="btn btn-default">Ulubione <i class="fa fa-external-link"></i></a>
                 <a target="_blank" href="{% url 'pdf:all' 'all' %}" class="btn btn-default">Wszystko <i class="fa fa-external-link"></i></a>
             </div>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
-
+import json
 from django.http import HttpResponse
 from django.shortcuts import render
 from easy_pdf.rendering import html_to_pdf
@@ -35,4 +35,8 @@ class ExporterPDFView(PDFTemplateView):
                 kwargs['rhymes'] = frontsite.models.Rhyme.objects.all()
             elif kwargs['context'] == 'favorite':
                 kwargs['rhymes'] = self.request.user.profile.stored_rhymes.all()
+            else:
+                ids = json.loads(kwargs['context'])
+                kwargs['rhymes'] = frontsite.models.Rhyme.objects.all().filter(id__in=ids)
+                print kwargs['rhymes']
         return super(ExporterPDFView, self).get_context_data(pagesize="A4", title="PDF", **kwargs)
