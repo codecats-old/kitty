@@ -7,4 +7,5 @@ urlpatterns = patterns('',
    url(r'^export/(?P<rhyme_id>\d+)$', views.ExporterPDFView.as_view(), name='index'),
    url(r'^export/(?P<context>all)$', views.ExporterPDFView.as_view(), name='all'),
    url(r'^export/(?P<context>favorite)$', views.ExporterPDFView.as_view(), name='favorite'),
+   url(r'^export/(?P<context>[\w\W]+)$', views.ExporterPDFView.as_view(), name='favorite'),
 )
