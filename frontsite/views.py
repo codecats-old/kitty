@@ -100,6 +100,8 @@ def comments_unread(request):
     }))
 def comments_mark_as_read(request, rhyme_id):
     comments = []
+    if (not hasattr(request.user, 'profile')):
+        return HttpResponse(json.dumps({'success': True}))
     profile = request.user.profile
     rhyme = models.Rhyme.objects.get(pk=rhyme_id)
     if rhyme.author.pk == profile.pk:

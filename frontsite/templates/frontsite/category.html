@@ -4,8 +4,8 @@
 <div class="row">
     <div class="col-md-8">
         {% for category in categories %}
-            <div class="col-md-4 well">
-                <h4 class="text-center">{{ category.title }}</h4>
+            <div class="col-md-4 well rhyme">
+                <h4 class="text-center well-image">{{ category.title }}</h4>
                 <p class="text-primary">
                     {{ category.description }}
                     <small class="pull-right">{{ category.created | date:"j E, Y" }}</small>
@@ -18,9 +18,9 @@
             </div>
         {% endfor %}
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 well">
         {% if request.user.is_authenticated == True and request.user.is_staff == True %}
-        <form action="" role="form" method="post">
+        <form action="?" role="form" method="post">
             {% for field in form.visible_fields %}
                 <div class="form-group {% if field.errors %}has-error{% endif %}">
                     {{ field.label_tag }}

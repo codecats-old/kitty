@@ -3,11 +3,13 @@
 {% block content %}
     <div class="row">
         <div class="col-md-2"></div>
-            <div class="col-md-8 well text-center">
+            <div class="col-md-8 well text-center rhyme">
                 {% if rhyme %}
-                    <h3><a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a></h3>
-                    <h4><small>{{ rhyme.category.title }}</small></h4>
-                    {{ rhyme.content|linebreaks }}
+                    <div class="well well-image">
+                        <h3><a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a></h3>
+                        <h4><small>{{ rhyme.category.title }}</small></h4>
+                    </div>
+                    {{ rhyme.content|safe|linebreaks }}
                     <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
                     {% if request.user.is_authenticated == True %}
                         {% if rhyme in request.user.profile.stored_rhymes.all %}

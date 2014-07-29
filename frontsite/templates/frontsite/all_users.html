@@ -1,31 +1,43 @@
 {% extends 'layout.html' %}
 {% load staticfiles %}
+{% load filters %}
 {% block content %}
-    <div class="row">
+    {% with 0 as scarfording %}
         {% for user in users %}
-            <div class="col-md-4 well well-lg">
-                <a class="btn btn-success" href="{% url 'frontsite:user' user.id %}">{{ user.username }}</a>
-                <a href="mailto:{{ user.email }}">{{ user.email }}</a>
-                {% if user.profile %}
-                    <hr>
-                    <div class="">
-                        {% if user.profile.avatar %}
-                            <img
-                                    class="img img-circle pull-left"
-                                    src="{% url 'frontsite:show-avatar' user.profile.avatar.path|add:'tiny' %}"
-                                    alt="awatar"
-                            />
-                        {% endif %}
-                        {% if request.user.is_authenticated == True %}
-                        <a
-                                href="{% url 'frontsite:vote' user.profile.id %}"
-                                class="fa fa-plus fa-2x btn btn-danger pull-right"> {{ user.vote_strength | default_if_none:"0" }}
-                        </a>
-                        {% endif %}
+            {% if scarfording == 0 %}
+                <div class="row">
+            {% endif %}
+            {% ++ scarfording %}
+                <div class="col-md-offset-1 col-md-3 well text-center rhyme">
+                    <a class="btn btn-success" href="{% url 'frontsite:user' user.id %}">{{ user.username }}</a>
+                    <div class="well-image">
+                        <a href="mailto:{{ user.email }}">{{ user.email }}</a>
                     </div>
-                {% endif %}
-            </div>
+                    {% if user.profile %}
+                        <hr>
+                        <div class="">
+                            {% if user.profile.avatar %}
+                                <img
+                                        class="img img-circle pull-left"
+                                        src="{% url 'frontsite:show-avatar' user.profile.avatar.path|add:'tiny' %}"
+                                        alt="awatar"
+                                />
+                            {% endif %}
+                            {% if request.user.is_authenticated == True %}
+                            <a
+                                    href="{% url 'frontsite:vote' user.profile.id %}"
+                                    class="fa fa-plus fa-1x btn btn-xs pull-right"> {{ user.vote_strength | default_if_none:"0" }}
+                            </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% if scarfording == 3 or forloop.last %}
+                </div>
+                {% set_int_var 0 as scarfording %}
+            {% endif %}
         {% endfor %}
+    {% endwith %}
         <div class="row">
             <div class="text-center pagination col-md-12">
                 <span class="step-links">
@@ -43,7 +55,6 @@
                 </span>
             </div>
         </div>
-    </div>
 {% endblock %}
 
 {% block javascript-custom %}

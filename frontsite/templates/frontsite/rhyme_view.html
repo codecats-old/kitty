@@ -2,11 +2,13 @@
 {% load staticfiles %}
 {% load filters %}
 {% block content %}
-    <div class="row">
+<div class="row" xmlns="http://www.w3.org/1999/html">
         <div class="col-md-2"></div>
-        <div class="col-md-8 well text-center">
-            <h3><a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a></h3>
-            <h4><small>{{ rhyme.category.title }}</small></h4>
+        <article class="col-md-8 well text-center rhyme">
+            <div class="well-image">
+                <h3><a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a></h3>
+                <h4><small>{{ rhyme.category.title }}</small></h4>
+            </div>
             {{ rhyme.content|safe|linebreaks }}
             <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
             {% if request.user.is_authenticated == True %}
@@ -22,6 +24,7 @@
                     <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' rhyme.id %}">Edytuj</a>
                     <a class="pull-right btn btn-primary btn-xs" href="{% url 'frontsite:rhyme_detail' id=rhyme.id delete='delete' %}">Usuń</a>
                 {% endif %}
+                <hr>
                 <form action="{% url 'frontsite:rhyme_view' rhyme.id %}" method="POST">
                     {{ form.as_p }}
                     {% csrf_token %}
@@ -29,15 +32,16 @@
                     <input class="btn btn-success" type="submit" value="Wyślij" />
                 </form>
             {% endif %}
+            <hr>
             {% for comment in comments %}
                 <div class="col-md-12 well">
                     <a href="{% url 'frontsite:user' comment.author.user.id %}" class="pull-left">
                         {{ comment.author.user.username }}
                     </a>
                     <span class="pull-right">{{ comment.date }}</span>
-                    <p>
-                        {{ comment.content|linebreaks }}
-                    </p>
+                    <div class="col-md-12">
+                        <p>{{ comment.content|linebreaks }}</p>
+                    </div>
                     {% if comment.author.id = request.user.profile.id or rhyme.author.id = request.user.profile.id %}
                         <a href="{% url 'frontsite:delete_comment' comment.id %}" class="btn btn-danger btn-xs pull-right">Usuń</a>
                     {% endif %}
@@ -60,7 +64,7 @@
                     </span>
                 </div>
             </div>
-        </div>
+        </article>
         <div class="col-md-2"></div>
     </div>
 {% endblock %}

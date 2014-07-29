@@ -2,6 +2,10 @@
 {% load staticfiles %}
 {% load filters %}
 {% block content %}
+
+{% if request.user.is_authenticated == False %}
+    {% include 'frontsite/components/carousel.html' %}
+{% endif %}
 <div class="row-fluid" ng-controller="RhymeCtrl">
 {% if request.user.is_authenticated == True and request.user.id == user.id %}
     <div class="text-center">

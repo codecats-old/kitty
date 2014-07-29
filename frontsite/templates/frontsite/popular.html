@@ -4,16 +4,18 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8 text-center">
-            <h2 class="text text-success">Najwięcej polubień</h2>
-            <ol class="well">
+            <h2 class="text text-success well-image">Najwięcej polubień</h2>
+            <ol class="list-unstyled">
                 {% for rhyme in mostLiked %}
                     {% if rhyme.vote_strength != None %}
-                        <li class="well">
-                            <h3 class="text text-success">
-                                <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a>
-                            </h3>
-                            <h4><small>{{ rhyme.category.title }}</small></h4>
-                            {{ rhyme.content|linebreaks }}
+                        <li class="well rhyme">
+                            <div class="well-image">
+                                <h3 class="text text-success">
+                                    <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a>
+                                </h3>
+                                <h4><small>{{ rhyme.category.title }}</small></h4>
+                            </div>
+                            {{ rhyme.content|safe|linebreaks }}
                             <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
                             {% if request.user.is_authenticated == True %}
                                 {% if rhyme in request.user.profile.stored_rhymes.all %}
@@ -22,7 +24,7 @@
                                     <a href="{% url 'frontsite:rhyme-store' rhyme.id %}" class="pull-left btn btn-success">Dodaj do ulubionych</a>
                                 {% endif %}
                                 <br>
-                                <a class="btn btn-danger" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
+                                <a class="btn btn-xs pull-right" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
                                     Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
                                 </a>
                             {% endif %}
@@ -32,15 +34,17 @@
                 {% endfor %}
             </ol>
 
-            <h2 class="text text-success">Najwięcej zapisanych</h2>
-            <ol class="well">
+            <h2 class="text text-success well-image">Najwięcej zapisanych</h2>
+            <ol class="list-unstyled">
                 {% for rhyme in mostSaved %}
-                    <li class="well">
-                        <h3 class="text text-success">
-                            <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a>
-                        </h3>
-                        <h4><small>{{ rhyme.category.title }}</small></h4>
-                        {{ rhyme.content|linebreaks }}
+                    <li class="well rhyme">
+                        <div class="well-image">
+                            <h3 class="text text-success">
+                                <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">{{ rhyme.title }}</a>
+                            </h3>
+                            <h4><small>{{ rhyme.category.title }}</small></h4>
+                        </div>
+                        {{ rhyme.content|safe|linebreaks }}
                         <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
                         {% if request.user.is_authenticated == True %}
                             {% if rhyme in request.user.profile.stored_rhymes.all %}
@@ -49,7 +53,7 @@
                                 <a href="{% url 'frontsite:rhyme-store' rhyme.id %}" class="pull-left btn btn-success">Dodaj do ulubionych</a>
                             {% endif %}
                             <br>
-                            <a class="btn btn-danger" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
+                            <a class="btn btn-xs pull-right" href="{% url 'frontsite:vote-rhyme' rhyme.id %}">
                                 Podoba się <i class="fa fa-plus fa-2x"> {{ rhyme.vote_strength | default_if_none:"0" }}</i>
                             </a>
                         {% endif %}
