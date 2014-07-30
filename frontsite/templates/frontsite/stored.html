@@ -70,6 +70,29 @@
                 </a>
                 <a target="_blank" href="{% url 'pdf:favorite' 'favorite' %}" class="btn btn-default">Ulubione <i class="fa fa-external-link"></i></a>
                 <a target="_blank" href="{% url 'pdf:all' 'all' %}" class="btn btn-default">Wszystko <i class="fa fa-external-link"></i></a>
+                <hr>
+                <label class="label label-default">Zmień kolejność <i class="fa fa-sliders"></i></label>
+                <a
+                    ng-click="dragMode($event)"
+                    id='dragBtn'
+                    class="btn btn-default"
+                >
+                    Przenieś
+                </a>
+                <a
+                    ng-click=""
+                    id='cancelDragDropBtn'
+                    class="btn btn-default disabled"
+                >
+                    Zatwierdź
+                </a>
+                <a
+                    ng-click=""
+                    id='cancelDragDropBtn'
+                    class="btn btn-default disabled"
+                >
+                    Anuluj
+                </a>
             </div>
         </div>
     </div>

@@ -11,10 +11,11 @@
 
             var element = angular.element(trigger);
             hide = (hide === null) ? element.hasClass('in') : hide;
-            $scope.exportModeState = hide;
+            var mode = hide;
             hide = (hide === true) ? 'hide' : 'show';
 
             element.collapse(hide);
+            return mode;
         };
         $scope.showCheckbox = function (hide) {
             var trigger = '[name=export-checkbox]';
@@ -29,7 +30,7 @@
             }
         };
         $scope.exportMode = function (e) {
-            $scope.collapse();
+            $scope.exportModeState = $scope.collapse();
             $scope.showCheckbox();
             var cancelBtn = angular.element('#cancelBtn').show('fast'),
                 exportBtn = angular.element('#exportBtn');
@@ -37,7 +38,6 @@
 
                 $scope.selectModeBtn = 'Eksportuj';
 
-                console.log($scope.selectModeBtn);
                 exportBtn.addClass('btn-danger');
                 cancelBtn.show('fast');
                 cancelBtn.removeClass('disabled');
@@ -59,6 +59,7 @@
                 var item = angular.element(this);
                 if (item.is(':checked')) {
                     exportIds.push(item.val());
+                    $scope.cancelExport();
                 }
             });
             var url = '/pdf/export/' + JSON.stringify(exportIds);
@@ -73,15 +74,62 @@
             exportBtn.removeClass('btn-danger');
             cancelBtn.hide('fast');
             cancelBtn.addClass('disabled');
-            $scope.collapse(false);
+            $scope.exportModeState = $scope.collapse(false);
             $scope.showCheckbox(false);
-        }
+        };
+        $scope.dragMode = function (e) {
+            $scope.dragModeState = $scope.collapse();
+            console.log($scope.dragModeState);
+            if ($scope.dragModeState) {
+                var rhymes = angular.element('article.rhyme');
+                rhymes.css('cursor', 'pointer');
+                angular.element('#dragBtn').addClass('btn-danger');
+
+                rhymes.unbind();
+                var startPos = {},
+                    dragRhyme = null;
+
+                rhymes.draggable({
+                    disabled:false,
+                    revert: "invalid",
+                    start: function (e, ui) {
+                        dragRhyme = $(this);
+                        startPos = dragRhyme.offset();
+                    }
+                });
+                rhymes.droppable({
+                    drop: function(e, ui){
+
+                        var dropRhyme = $(this),
+                            offset = {y: dropRhyme.offset().top, x: dropRhyme.offset().left};
+                        dropRhyme.offset({left: startPos.left});
+                        dropRhyme.offset({top: startPos.top});
+
+                        dragRhyme.offset({left: offset.x});
+                        dragRhyme.offset({top: offset.y});
+                    }
+                });
+                rhymes.bind('mousedown', function () {
+                    var rhyme = angular.element(this);
+                    rhyme.css('z-index', 1);
+                });
+                rhymes.bind('mouseup', function () {
+                    var rhyme = angular.element(this);
+                    rhyme.css('z-index', 'auto');
+                });
+
+            } else {
+                angular.element('article.rhyme').css('cursor', '');
+                angular.element('#dragBtn').removeClass('btn-danger');
+
+            }
+        };
 
         $scope.selectModeBtn = 'Eksportuj/Zaznacz';
         $scope.cancelBtn = 'Anuluj';
         $scope.exportModeState = false;
+        $scope.dragModeState = false;
         angular.element('#cancelBtn').hide();
         $scope.showCheckbox();
-      window.s = $scope;
 
  }]);
