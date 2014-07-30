@@ -2,11 +2,13 @@
 <!-- {%carousel -->
 <style>
     .carousel, .carousel .item{
-        min-height: 600px;
-        max-height: 600px;
+        *min-height: 600px;
+        *max-height: 600px;
     }
     .carousel img{
         margin: auto;
+        *min-height: inherit;
+        *max-height: inherit;
     }
     .carousel-caption{
         color: #F2B407;
@@ -34,6 +36,9 @@
         left:0;
         opacity:1;
         z-index:1;
+    }
+    .carousel-control.left, .carousel-control.right{
+        background-image: none;
     }
 </style>
 <div class="row">
