@@ -80,20 +80,23 @@
                     Przenieś
                 </a>
                 <a
-                    ng-click=""
-                    id='cancelDragDropBtn'
-                    class="btn btn-default disabled"
+                    ng-click="saveDrag($event)"
+                    id='saveDragDropBtn'
+                    class="btn btn-default btn-primary disabled"
                 >
-                    Zatwierdź
+                    Zapisz
                 </a>
                 <a
-                    ng-click=""
+                    ng-click="cancelDrag($event)"
                     id='cancelDragDropBtn'
                     class="btn btn-default disabled"
                 >
                     Anuluj
                 </a>
             </div>
+        </div>
+        <div class="modal fade" id="modalRefresh">
+            <div class="modal-dialog"></div>
         </div>
     </div>
 {% endblock %}

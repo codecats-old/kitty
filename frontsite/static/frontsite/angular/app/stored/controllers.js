@@ -79,8 +79,9 @@
         };
         $scope.dragMode = function (e) {
             $scope.dragModeState = $scope.collapse();
-            console.log($scope.dragModeState);
             if ($scope.dragModeState) {
+                angular.element('#cancelDragDropBtn').removeClass('disabled');
+                angular.element('#saveDragDropBtn').removeClass('disabled');
                 var rhymes = angular.element('article.rhyme');
                 rhymes.css('cursor', 'pointer');
                 angular.element('#dragBtn').addClass('btn-danger');
@@ -100,13 +101,14 @@
                 rhymes.droppable({
                     drop: function(e, ui){
 
-                        var dropRhyme = $(this),
+                        var dropRhyme = angular.element(this),
                             offset = {y: dropRhyme.offset().top, x: dropRhyme.offset().left};
-                        dropRhyme.offset({left: startPos.left});
-                        dropRhyme.offset({top: startPos.top});
+                        dropRhyme.offset({left: startPos.left, top: startPos.top});
 
-                        dragRhyme.offset({left: offset.x});
-                        dragRhyme.offset({top: offset.y});
+                        dragRhyme.offset({left: offset.x, top: offset.y});
+                        startPos = {};
+                        $scope.$emit('dropDetected');
+
                     }
                 });
                 rhymes.bind('mousedown', function () {
@@ -121,10 +123,19 @@
             } else {
                 angular.element('article.rhyme').css('cursor', '');
                 angular.element('#dragBtn').removeClass('btn-danger');
-
             }
         };
-
+        $scope.$on('dropDetected', function () {
+            angular.element('#modalRefresh').modal('show').modal('hide');
+        });
+        $scope.cancelDrag = function (e) {
+            document.location.reload();
+        };
+        $scope.saveDrag = function (e) {
+            document.location.reload();
+        };
+        $scope.modalTitle = 'Zatwierdzić zmiany?';
+        $scope.modalBody = 'Bez zatwierdzenia dane zostaną utracone';
         $scope.selectModeBtn = 'Eksportuj/Zaznacz';
         $scope.cancelBtn = 'Anuluj';
         $scope.exportModeState = false;
