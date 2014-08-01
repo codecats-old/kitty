@@ -78,8 +78,14 @@
             $scope.showCheckbox(false);
         };
         $scope.dragMode = function (e) {
+            if ($scope.exportModeState) {
+                $scope.cancelExport();
+            }
             $scope.dragModeState = $scope.collapse();
             if ($scope.dragModeState) {
+                $scope.exportMode = $scope.dragMode = function () {};
+                angular.element('#dragBtn').addClass('disabled');
+                angular.element('#exportBtn').addClass('disabled');
                 angular.element('#cancelDragDropBtn').removeClass('disabled');
                 angular.element('#saveDragDropBtn').removeClass('disabled');
                 var rhymes = angular.element('article.rhyme');
@@ -106,6 +112,12 @@
                         dropRhyme.offset({left: startPos.left, top: startPos.top});
 
                         dragRhyme.offset({left: offset.x, top: offset.y});
+                        /*
+                        * Swap position
+                        */
+                        var newOrder = dragRhyme.attr('position-order');
+                        dragRhyme.attr('position-order', dropRhyme.attr('position-order'));
+                        dropRhyme.attr('position-order', newOrder);
                         startPos = {};
                         $scope.$emit('dropDetected');
 
@@ -132,7 +144,22 @@
             document.location.reload();
         };
         $scope.saveDrag = function (e) {
-            document.location.reload();
+            e.preventDefault();
+            var rhymes = angular.element('article.rhyme'),
+                orderMap = [];
+
+            rhymes.each(function(){
+                orderMap.push(angular.element(this).attr('position-order'));
+            });
+            $http.
+                post('/map-order', {'map': orderMap}).then(
+                    function success () {
+                        document.location.reload();
+                    },
+                    function failure () {
+                        alert('Coś poszło nie tak, spróbuj ponownie później');
+                    }
+                );
         };
         $scope.modalTitle = 'Zatwierdzić zmiany?';
         $scope.modalBody = 'Bez zatwierdzenia dane zostaną utracone';
@@ -142,5 +169,4 @@
         $scope.dragModeState = false;
         angular.element('#cancelBtn').hide();
         $scope.showCheckbox();
-
  }]);

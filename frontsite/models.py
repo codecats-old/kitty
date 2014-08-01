@@ -43,3 +43,8 @@ class Comment(models.Model):
     rhyme = models.ForeignKey(Rhyme, related_name='comments')
     rhyme_author_saw = models.BooleanField(default=False)
     author = models.ForeignKey(UserProfile, related_name='commented_rhymes')
+
+# class RhymeProfiles(models.Model):
+#     owner = models.ForeignKey(UserProfile)
+#     rhyme = models.ForeignKey(Rhyme, related_name='map')
+#     position_no = models.PositiveIntegerField()

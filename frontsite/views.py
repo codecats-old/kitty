@@ -49,6 +49,14 @@ def count_author_rhyme_votes(request):
         'data': data
     }))
 
+def map_order(request):
+
+
+    messages.info(request, u'Dane zostały zaakceptowane')
+    return HttpResponse(json.dumps({
+        'success': True
+    }))
+
 def voters(request, rhyme_id):
     votes = models.VoteRhyme.objects.all().filter(rhyme__id=rhyme_id)
     data = []

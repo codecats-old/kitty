@@ -15,8 +15,8 @@
                 {% endif %}
                 {% ++ scarfording %}
 
-                    <article class="col-md-5 col-md-offset-1 well rhyme">
-                        <h3 data-toggle="collapse" href="[name=collapsible-content]">
+                    <article class="col-md-5 col-md-offset-1 well rhyme" position-order="{{ forloop.counter }}">
+                        <h3 data-toggle="collapse" href="[name=collapsible-content]" class=" well-image">
                             <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
                                 {{ rhyme.title }}
                             </a>
