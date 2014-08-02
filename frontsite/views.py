@@ -224,7 +224,9 @@ class Rhyme(FormView):
             rhyme = form.save(commit=False)
             if self.kwargs.has_key('id'):
                 rhyme.id = self.kwargs['id']
-                rhyme.created = models.Rhyme.objects.get(pk=self.kwargs['id']).created
+                existing_rhyme = models.Rhyme.objects.get(pk=self.kwargs['id'])
+                rhyme.created = existing_rhyme.created
+                author = existing_rhyme.author
 
             rhyme.author = author
             rhyme.save()
