@@ -23,8 +23,12 @@ from frontsite import utils
 
 def typehead_search(request, query):
     rhymes = models.Rhyme.objects.filter(Q(title__icontains=query) | Q(content__icontains=query))\
-                .annotate(vote_strength=Sum('votes__strength'))\
-                .order_by('-created')[:10]
+                .annotate(vote_strength=Sum('votes__strength'))
+    if request.user.is_authenticated() and not request.user.is_staff:
+        rhymes = rhymes.filter(Q(public=True) | Q(author=request.user.profile))
+    if not request.user.is_authenticated():
+        rhymes = rhymes.filter(public=True)
+    rhymes = rhymes.order_by('-created')[:10]
     return HttpResponse(json.dumps(
         [dict(model_to_dict(item).items() + {'vote_strength': item.vote_strength}.items())  for item in rhymes]
     ))
@@ -59,6 +63,7 @@ def map_order(request):
             if int(map[u'id']) == store.id:
                 store.position_no = map[u'position']
                 store.save()
+                messages.info(request, u'Zmieniono kolejność')
     return HttpResponse(json.dumps({
         'success': True
     }))
@@ -193,6 +198,10 @@ class Rhyme(FormView):
                 .order_by('-created')
         if search is not None:
             rhymes = rhymes.filter(Q(title__icontains=search) | Q(content__icontains=search))
+        if self.request.user.is_authenticated() and not self.request.user.is_staff:
+            rhymes = rhymes.filter(Q(public=True) | Q(author=self.request.user.profile))
+        if not self.request.user.is_authenticated():
+            rhymes = rhymes.filter(public=True)
         paginator = Paginator(rhymes, 10)
         page = self.request.GET.get('page')
         try:
@@ -211,15 +220,18 @@ class Rhyme(FormView):
         form = RhymeForm(data)
         form_is_valid = form.is_valid()
         if form_is_valid:
+            author = self.request.user.profile
             rhyme = form.save(commit=False)
             if self.kwargs.has_key('id'):
                 rhyme.id = self.kwargs['id']
                 rhyme.created = models.Rhyme.objects.get(pk=self.kwargs['id']).created
-            rhyme.author = self.request.user.profile
+
+            rhyme.author = author
             rhyme.save()
-            store = models.RhymeProfiles()
-            (store.owner, store.rhyme) = (self.request.user.profile, rhyme)
-            store.save()
+            if models.RhymeProfiles.objects.filter(owner=author, rhyme=rhyme).count() == 0:
+                store = models.RhymeProfiles()
+                (store.owner, store.rhyme) = (author, rhyme)
+                store.save()
             if not self.request.is_ajax():
                 return  redirect(reverse('frontsite:index'))
             if form_is_valid:
@@ -453,11 +465,11 @@ def stored(request):
 
 def random(request):
     rhyme, last = (None, None)
-    last = models.Rhyme.objects.all().order_by('-id')
+    last = models.Rhyme.objects.all().filter(public=True).order_by('-id')
     if last:
         while rhyme is None:
             try:
-                rhyme = models.Rhyme.objects.get(pk=randint(1, last[0].id))
+                rhyme = models.Rhyme.objects.get(pk=randint(1, last[0].id), public=True)
             except:
                 pass
     return render(request, 'frontsite/random.html', {
@@ -465,8 +477,8 @@ def random(request):
     })
 
 def most_popular(request):
-    mostLiked = models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5]
-    mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).filter(saved_count__gt=0).order_by('-saved_count')[:6]
+    mostLiked = models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).filter(public=True).order_by('-vote_strength')[:5]
+    mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).filter(saved_count__gt=0, public=True).order_by('-saved_count')[:6]
     """
     mostSaved = models.Rhyme.objects.raw('''
         SELECT tab.id, SUM("frontsite_voterhyme"."strength") AS "vote_strength"

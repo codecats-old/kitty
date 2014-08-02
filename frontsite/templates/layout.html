@@ -116,6 +116,7 @@
                                 <i class="fa fa-book"></i>Ulubione <span class="badge">{{ request.user.profile.stored_rhymes.count }}</span>
                             </a>
                         </li>
+                        {% endif %}
                         <li>
                             <form class="navbar-form navbar-left"
                                   role="search" action="{% url 'frontsite:rhymes_search' %}">
@@ -129,7 +130,7 @@
 
                             </form>
                         </li>
-                        {% endif %}
+
                         {% comment %}
                         <li class="dropdown">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">Messages <b class="caret"></b></a>

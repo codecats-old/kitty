@@ -21,6 +21,12 @@ class RhymeForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class':'form-control'}),
         label=u'Tytuł'
     )
+    public = forms.BooleanField(
+        label=u'Publiczny',
+        initial=True,
+        widget=forms.CheckboxInput(),
+        required=False
+    )
     content = forms.CharField(
         widget=forms.Textarea(attrs={'class':'form-control'}),
         label=u'Treść'
@@ -33,7 +39,7 @@ class RhymeForm(forms.ModelForm):
     )
     class Meta:
         model = Rhyme
-        fields = ('title', 'content', 'category')
+        fields = ('title', 'public', 'content', 'category')
     def save(self, commit=True):
         rhyme = super(RhymeForm, self).save(commit=False)
         if commit is True:

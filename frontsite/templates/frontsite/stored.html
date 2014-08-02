@@ -24,6 +24,9 @@
                             <a href="{% url 'frontsite:rhyme_view' stored.rhyme.id %}">
                                 {{ stored.rhyme.title }}
                             </a>
+                            {% if stored.rhyme.public == False %}
+                                <i class="fa fa-eye-slash"></i>
+                            {% endif %}
                         </h3>
                         <div class="checkbox pull-left" name="export-checkbox">
                             <label>

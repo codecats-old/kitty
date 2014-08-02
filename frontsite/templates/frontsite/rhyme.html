@@ -39,7 +39,6 @@
         <div><!-- {%div wrapper -->
         {% with 0 as scarfording %}
         {% for rhyme in rhymes %}
-
                 {% if scarfording == 0 %}
                     <div class="row">
                 {% endif %}
@@ -59,6 +58,9 @@
                                 {{ rhyme.title }}
                             </a>
                             <small> {{ rhyme.category.title }}</small>
+                            {% if rhyme.public == False %}
+                                <i class="fa fa-eye-slash"></i>
+                            {% endif %}
                         </h2>
                         <div class="pull-right">
                             <a href="{% url 'pdf:index' rhyme.id %}" class="btn btn-xs btn-success" target="_blank">
@@ -153,7 +155,7 @@
                                         Wypisz się
                                     </a>
                                 {% endif %}
-                                {% if rhyme.author.id == request.user.profile.id %}
+                                {% if rhyme.author.id == request.user.profile.id or request.user.is_staff %}
                                     <a class="pull-right btn btn-primary btn-xs"
                                        ng-click="edit($event, {{ forloop.counter }})"
                                        href="{% url 'frontsite:rhyme_detail' rhyme.id %}"

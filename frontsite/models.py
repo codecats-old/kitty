@@ -29,7 +29,7 @@ class Rhyme(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(UserProfile, related_name='created_rhymes')
     category = models.ForeignKey(Category, null=True, blank=True, related_name='rhymes')
-    #public = models.BooleanField(default=True)
+    public = models.BooleanField(default=True)
 
 class VoteRhyme(models.Model):
     rhyme = models.ForeignKey(Rhyme, related_name='votes')
