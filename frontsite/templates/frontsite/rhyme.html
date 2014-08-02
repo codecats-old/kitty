@@ -136,7 +136,7 @@
 
                             {% if request.user.is_authenticated == True %}
                                 <div class="center-block" ng-controller="StoreCtrl">
-                                {% if rhyme not in request.user.profile.stored_rhymes.all %}
+                                {% if rhyme not in stored %}
                                     <a
                                             ng-click="storeChange($event, '{% url 'frontsite:rhyme-unstore' rhyme.id %}', ' Wypisz się', {{ forloop.counter }})"
                                             class="btn btn-success fa fa-save"

@@ -49,10 +49,16 @@ def count_author_rhyme_votes(request):
         'data': data
     }))
 
+@login_required
 def map_order(request):
-
-
-    messages.info(request, u'Dane zostały zaakceptowane')
+    maps = json.loads(request.body)[u'map']
+    stored = models.RhymeProfiles.objects.all().filter(owner=request.user.profile)
+    for map in maps:
+        print map
+        for store in stored:
+            if int(map[u'id']) == store.id:
+                store.position_no = map[u'position']
+                store.save()
     return HttpResponse(json.dumps({
         'success': True
     }))
@@ -211,7 +217,9 @@ class Rhyme(FormView):
                 rhyme.created = models.Rhyme.objects.get(pk=self.kwargs['id']).created
             rhyme.author = self.request.user.profile
             rhyme.save()
-            rhyme.profiles.add(self.request.user.profile)
+            store = models.RhymeProfiles()
+            (store.owner, store.rhyme) = (self.request.user.profile, rhyme)
+            store.save()
             if not self.request.is_ajax():
                 return  redirect(reverse('frontsite:index'))
             if form_is_valid:
@@ -225,8 +233,7 @@ class Rhyme(FormView):
         return render(self.request, self.template_name, {
             'form': form,
             'rhymes': self.find_data(),
-            'rhymesAuthor': self.request.user.profile.created_rhymes,
-            'rhymesStored': self.request.user.profile.stored_rhymes
+            'stored': models.Rhyme.objects.filter(profiles__owner=self.request.user.profile),
         })
 
     def delete(self, *args, **kwargs):
@@ -237,10 +244,9 @@ class Rhyme(FormView):
         return HttpResponse(json.dumps({'success': True}))
 
     def get(self, *args, **kwargs):
-        rhyme, rhymesAuthor, rhymesStored = (None, None, None)
+        rhyme, stored = (None, None)
         if hasattr(self.request.user, 'profile'):
-            rhymesAuthor = self.request.user.profile.created_rhymes
-            rhymesStored = self.request.user.profile.stored_rhymes
+            stored = models.Rhyme.objects.filter(profiles__owner=self.request.user.profile)
         if self.kwargs.has_key('id'):
             rhyme = models.Rhyme.objects.get(pk=self.kwargs['id'])
             if self.kwargs.has_key('delete') and self.kwargs['delete'] == 'delete':
@@ -259,8 +265,7 @@ class Rhyme(FormView):
         return render(self.request, self.template_name, {
             'form': RhymeForm(instance=rhyme),
             'rhymes': rhymes,
-            'rhymesAuthor': rhymesAuthor,
-            'rhymesStored': rhymesStored,
+            'stored': stored,
             'categories' : models.Category.objects.all(),
             'search': search if search is not None else ''
         })
@@ -396,6 +401,7 @@ class Registration(FormView):
 
     def form_valid(self, form):
         form.save()
+        messages.info(self.request, u'Teraz możesz się zalogować')
         return super(Registration, self).form_valid(form)
 
     @method_decorator(anonymous_required)
@@ -424,25 +430,26 @@ def vote_rhyme(request, rhyme_id):
     return redirect(reverse('frontsite:index'))
 
 def rhyme_store(request, id):
-    rhyme = models.Rhyme.objects.get(pk=id)
-    if not models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]):
-        request.user.profile.stored_rhymes.add(rhyme)
-        request.user.profile.save()
+    if not models.RhymeProfiles.objects.filter(owner__id=request.user.profile.id, rhyme__id=id).count() > 0:
+        store = models.RhymeProfiles()
+        (store.owner, store.rhyme) = (request.user.profile, models.Rhyme.objects.get(pk=id))
+        store.save()
     if request.is_ajax():
         return HttpResponse(json.dumps({'success': True}))
     return redirect(reverse('frontsite:stored'))
 
 def rhyme_unstore(request, id):
-    rhyme = models.Rhyme.objects.get(pk=id)
-    if models.UserProfile.objects.filter(pk=request.user.profile.id, stored_rhymes__in=[rhyme.id]):
-        request.user.profile.stored_rhymes.remove(rhyme)
-        request.user.profile.save()
+    if models.RhymeProfiles.objects.filter(owner__id=request.user.profile.id, rhyme__id=id).count() > 0:
+        store = models.RhymeProfiles.objects.get(owner__id=request.user.profile.id, rhyme__id=id)
+        store.delete()
     if request.is_ajax():
         return HttpResponse(json.dumps({'success': True}))
     return redirect(reverse('frontsite:stored'))
 
 def stored(request):
-    return render(request, 'frontsite/stored.html')
+    return render(request, 'frontsite/stored.html', {
+        'storedRhymes': request.user.profile.stored_rhymes.all().order_by('position_no')
+    })
 
 def random(request):
     rhyme, last = (None, None)
@@ -459,7 +466,7 @@ def random(request):
 
 def most_popular(request):
     mostLiked = models.Rhyme.objects.all().annotate(vote_strength=Sum('votes__strength')).order_by('-vote_strength')[:5]
-    mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).order_by('-saved_count')[:6]
+    mostSaved = models.Rhyme.objects.all().annotate(saved_count=Count('profiles')).filter(saved_count__gt=0).order_by('-saved_count')[:6]
     """
     mostSaved = models.Rhyme.objects.raw('''
         SELECT tab.id, SUM("frontsite_voterhyme"."strength") AS "vote_strength"

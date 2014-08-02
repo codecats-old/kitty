@@ -5,41 +5,45 @@
     <div class="row" ng-controller="ExportCtrl">
 
         <div class="col-md-1"></div>
-        <div class="col-md-8  text-center">
+        <div class="col-md-8 text-center">
             <div class="row list-unstyled">
             {% with 0 as scarfording %}
-            {% for rhyme in request.user.profile.stored_rhymes.all %}
+            {% for stored in storedRhymes %}
 
-                {% if scarfording == 0 %}>
+                {% if scarfording == 0 %}
                     <div class="row">
                 {% endif %}
                 {% ++ scarfording %}
 
-                    <article class="col-md-5 col-md-offset-1 well rhyme" position-order="{{ forloop.counter }}">
+                    <article
+                            class="col-md-5 col-md-offset-1 well rhyme"
+                            position-order="{{ forloop.counter }}"
+                            position-order-id="{{ stored.id }}"
+                    >
                         <h3 data-toggle="collapse" href="[name=collapsible-content]" class=" well-image">
-                            <a href="{% url 'frontsite:rhyme_view' rhyme.id %}">
-                                {{ rhyme.title }}
+                            <a href="{% url 'frontsite:rhyme_view' stored.rhyme.id %}">
+                                {{ stored.rhyme.title }}
                             </a>
                         </h3>
                         <div class="checkbox pull-left" name="export-checkbox">
                             <label>
-                                <input select-name='rhymeIds' name='rhymeIds[]' value='{{ rhyme.id }}' type="checkbox" />Zaznacz
+                                <input select-name='rhymeIds' name='rhymeIds[]' value='{{ stored.rhyme.id }}' type="checkbox" />Zaznacz
                             </label>
                         </div>
                         <div name="collapsible-content" class="panel-collapse collapse in">
-                            {% if rhyme.category %}
+                            {% if stored.rhyme.category %}
                                 <h4>
-                                    <small><a href="{% url 'frontsite:rhymes_by_category' rhyme.category.id %}">{{ rhyme.category.title }}</a></small>
+                                    <small><a href="{% url 'frontsite:rhymes_by_category' stored.rhyme.category.id %}">{{ stored.rhyme.category.title }}</a></small>
                                 </h4>
                             {% endif %}
                             <div class="pull-right">
-                                <a href="{% url 'pdf:index' rhyme.id %}" class="btn btn-xs btn-success" target="_blank">
+                                <a href="{% url 'pdf:index' stored.rhyme.id %}" class="btn btn-xs btn-success" target="_blank">
                                     <i class="fa fa-file-pdf-o"></i>
                                 </a>
                             </div>
-                            {{ rhyme.content|safe|linebreaks }}
-                            <div class="pull-right text-success">{{ rhyme.created|date:'d M, Y' }}</div>
-                            <a href="{% url 'frontsite:rhyme-unstore' rhyme.id %}" class="pull-left btn btn-success">Wypisz się</a>
+                            {{ stored.rhyme.content|safe|linebreaks }}
+                            <div class="pull-right text-success">{{ stored.rhyme.created|date:'d M, Y' }}</div>
+                            <a href="{% url 'frontsite:rhyme-unstore' stored.rhyme.id %}" class="pull-left btn btn-success">Wypisz się</a>
                         </div>
                     </article>
                 {% if scarfording == 2 or forloop.last %}

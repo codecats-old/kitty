@@ -37,6 +37,7 @@
             <h2 class="text text-success well-image">Najwięcej zapisanych</h2>
             <ol class="list-unstyled">
                 {% for rhyme in mostSaved %}
+                    {{rhyme.saved_count}}
                     <li class="well rhyme">
                         <div class="well-image">
                             <h3 class="text text-success">

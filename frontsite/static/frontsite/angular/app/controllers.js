@@ -25,7 +25,7 @@
             );
          };
      $scope.unreadCommentsCount = '-';
-     $scope.commentsVotesStrength = '-';
+     $scope.commentsVotesStrenggth = '-';
      $scope.unreadComments = [];
      $scope.commentsVotes = [];
      $('#trigger-comments-unread').popover({

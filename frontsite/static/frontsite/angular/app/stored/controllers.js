@@ -83,6 +83,9 @@
             }
             $scope.dragModeState = $scope.collapse();
             if ($scope.dragModeState) {
+                window.onbeforeunload = function(){
+                    return 'Jesteś w trybie przenoszenia, zmiany zostaną utracone, kontynuować?';
+                };
                 $scope.exportMode = $scope.dragMode = function () {};
                 angular.element('#dragBtn').addClass('disabled');
                 angular.element('#exportBtn').addClass('disabled');
@@ -141,18 +144,24 @@
             angular.element('#modalRefresh').modal('show').modal('hide');
         });
         $scope.cancelDrag = function (e) {
+            window.onbeforeunload = null;
             document.location.reload();
         };
         $scope.saveDrag = function (e) {
             e.preventDefault();
+            window.onbeforeunload = null;
             var rhymes = angular.element('article.rhyme'),
-                orderMap = [];
+                orderMap = [],
+                orderMapId = [];
 
             rhymes.each(function(){
-                orderMap.push(angular.element(this).attr('position-order'));
+                orderMapId.push({
+                    'id': angular.element(this).attr('position-order-id'),
+                    'position': angular.element(this).attr('position-order')
+                });
             });
             $http.
-                post('/map-order', {'map': orderMap}).then(
+                post('/map-order', {'map': orderMapId}).then(
                     function success () {
                         document.location.reload();
                     },

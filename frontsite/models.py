@@ -28,8 +28,8 @@ class Rhyme(models.Model):
     content = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(UserProfile, related_name='created_rhymes')
-    profiles = models.ManyToManyField(UserProfile, related_name='stored_rhymes')
     category = models.ForeignKey(Category, null=True, blank=True, related_name='rhymes')
+    #public = models.BooleanField(default=True)
 
 class VoteRhyme(models.Model):
     rhyme = models.ForeignKey(Rhyme, related_name='votes')
@@ -44,7 +44,7 @@ class Comment(models.Model):
     rhyme_author_saw = models.BooleanField(default=False)
     author = models.ForeignKey(UserProfile, related_name='commented_rhymes')
 
-# class RhymeProfiles(models.Model):
-#     owner = models.ForeignKey(UserProfile)
-#     rhyme = models.ForeignKey(Rhyme, related_name='map')
-#     position_no = models.PositiveIntegerField()
+class RhymeProfiles(models.Model):
+    owner = models.ForeignKey(UserProfile, related_name='stored_rhymes')
+    rhyme = models.ForeignKey(Rhyme, related_name='profiles')
+    position_no = models.PositiveIntegerField(default=0)
