@@ -72,10 +72,49 @@
                     {% endfor %}
                 </div>
             </div>
+            {% if request.user.is_authenticated %}
+                {% if request.user.id == user.id or request.user.is_staff %}
+                    <!-- {% ng-edit -->
+                        <form name="userForm" ng-controller="UserCtrl">
+                            <input type="hidden" ng-model="user.id" value="{{ user.id }}">
+                            <input class="form-control" ng-model="user.username" placeholder="nazwa">
+                            <div class="text-warning bg bg-danger">
+                                {$ user.errors['username'] $}
+                            </div>
+                            <input class="form-control" ng-model="user.email" placeholder="e-mail">
+                            <div class="text-warning bg bg-danger">
+                                {$ user.errors['email'] $}
+                            </div>
+                            <input class="form-control" ng-model="user.first_name" placeholder="imie">
+                            <div class="text-warning bg bg-danger">
+                                {$ user.errors['first_name'] $}
+                            </div>
+                            <input class="form-control" ng-model="user.last_name" placeholder="nazwisko">
+                            <div class="text-warning bg bg-danger">
+                                {$ user.errors['last_name'] $}
+                            </div>
+                            <input type="password" class="form-control" ng-model="user.password" placeholder="hasło">
+                            <div class="text-warning bg bg-danger">
+                                {$ user.errors['password'] $}
+                            </div>
+                            <input type="password" class="form-control" ng-model="user.confirm_password" placeholder="potwierdź">
+                            <div class="text-warning bg bg-danger">
+                                {$ user.errors['confirm_password'] $}
+                            </div>
+                            <div class="text-warning bg bg-danger">
+                                {$ user.errors['__all__'] $}
+                            </div>
+                            <button class="form-control btn btn-success" ng-click="update($event)">Zapisz</button>
+                        </form>
+                    <!-- ng-edit %} -->
+                {% endif %}
+            {% endif %}
         </div>
         <div class="col-md-3"></div>
     </div>
 {% endblock %}
 
-{% block javascript-custom %}
+ {% block javascript-custom %}
+    <script type="text/javascript" src="{% static 'frontsite/angular/app/user/controllers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontsite/angular/app/user/services.js' %}"></script>
 {% endblock %}

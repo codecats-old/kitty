@@ -12,12 +12,12 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.http import HttpResponse, QueryDict
+from django.http import HttpResponse, QueryDict, HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View, FormView
 from frontsite.decorators import anonymous_required, login_required
-from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm, RhymeForm, CommentForm
+from frontsite.forms import UserForm, LoginForm, CategoryForm, AvatarForm, RhymeForm, CommentForm, UserUpdateForm
 from frontsite import models
 from frontsite import utils
 
@@ -343,8 +343,36 @@ class User(View):
     template_name = 'frontsite/user.html'
 
     @method_decorator(login_required)
+    def put(self, *args, **kwargs):
+        user = json.loads(self.request.body)
+        if not self.request.user.is_staff and self.request.user.id != user['id']:
+            return HttpResponseForbidden()
+        form = UserUpdateForm(user, instance=auth.models.User.objects.get(id=user['id']))
+        if form.is_valid():
+            form.save()
+            messages.info(self.request, u'Dane zmienione')
+
+        return HttpResponse(json.dumps({
+           'valid': form.is_valid(),
+            'errors': {k: form.error_class.as_text(v) for k, v in form.errors.items()},
+            'id': user['id'],
+            'username': user['username'],
+            'email': user['email'],
+            'last_name': user['last_name'],
+            'first_name': user['first_name']
+        }))
+
+    @method_decorator(login_required)
     def get(self, *args, **kwargs):
         user = auth.models.User.objects.get(pk=self.kwargs.get('id'))
+        if self.request.is_ajax():
+            return HttpResponse(json.dumps({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'last_name': user.last_name,
+                'first_name': user.first_name
+            }))
         votes = None
         strength_sum = None
         if hasattr(user, 'profile'):
@@ -353,6 +381,7 @@ class User(View):
             aggregate = votes.aggregate(Sum('strength'))
             if hasattr(aggregate, 'strength__sum'):
                 strength_sum = aggregate['strength__sum']
+
         return render(self.request, self.template_name, {
             'user': user,
             'votes': votes,

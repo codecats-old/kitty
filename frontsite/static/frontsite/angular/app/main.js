@@ -1,9 +1,10 @@
 var kittyApp = angular.module('kittyApp', [
     'ngRoute',
     'ngCookies',
-//    'phonecatControllers',
+    'kittyControllers',
     'kittyFilters',
-    'kittyServices'
+    'kittyServices',
+ //   'kittyUserControllers'
 ]);
 
 kittyApp.run(function run ($http, $cookies, typeheadService) {

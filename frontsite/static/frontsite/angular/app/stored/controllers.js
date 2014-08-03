@@ -1,9 +1,9 @@
 'use strict';
-
+kittyApp.requires.push('kittyStoredControllers');
  var kittyStoredControllers = angular.module('kittyStoredControllers', []);
   /* Controllers */
 
- kittyApp.controller('ExportCtrl', ['$scope', '$http',
+ kittyStoredControllers.controller('ExportCtrl', ['$scope', '$http',
                                  function($scope, $http) {
         $scope.collapse = function (hide) {
             var trigger = '[name=collapsible-content]';

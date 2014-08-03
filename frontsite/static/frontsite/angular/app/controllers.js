@@ -3,7 +3,7 @@
  var kittyControllers = angular.module('kittyControllers', []);
   /* Controllers */
  
- kittyApp.
+ kittyControllers.
  controller('RootCtrl', ['$scope', '$http',
                             function($scope, $http) {
      var updateCommentStatus = function () {
@@ -146,7 +146,7 @@
                 then(
                     function success (response) {
                         angular.element('#rhyme-id-' + loopCounter).remove();
-                        //document.location.reload();
+                        document.location.reload();
                     }
                 );
         }

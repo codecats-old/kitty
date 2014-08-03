@@ -91,6 +91,39 @@ class UserForm(forms.ModelForm):
             user_profile.save()
         return user
 
+class UserUpdateForm(forms.ModelForm):
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder': u'Powtórz'}))
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'first_name', 'last_name')
+
+    def clean(self):
+        password = self.cleaned_data.get('password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+        if password and password != confirm_password:
+            raise forms.ValidationError(u'Hasło się nie zgadza')
+        return self.cleaned_data
+
+    def clean_email(self):
+        email=self.cleaned_data.get('email')
+        if User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
+            raise forms.ValidationError(u'Email "%s" jest używany' % email)
+        return email
+
+    def clean_username(self):
+        username=self.cleaned_data.get('username')
+        if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+            raise forms.ValidationError(u'Nazwa użytkownika "%s" jest używana' % username)
+        return username
+
+    def save(self, commit=True):
+        user = super(UserUpdateForm, self).save(commit=False)
+        user.set_password(user.password)
+        if commit is True:
+            user.save()
+        return user
+
+
 class LoginForm(forms.ModelForm):
     user = None
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label=u'Hasło')
