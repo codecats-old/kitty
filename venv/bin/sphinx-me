@@ -1,10 +1,11 @@
-#!/home/s/py/django/kitty/venv/bin/python
-# EASY-INSTALL-ENTRY-SCRIPT: 'sphinx-me==0.2.1','console_scripts','sphinx-me'
-__requires__ = 'sphinx-me==0.2.1'
+#!/home/t/py/django/kitty/venv/bin/python
+
+# -*- coding: utf-8 -*-
+import re
 import sys
-from pkg_resources import load_entry_point
+
+from sphinx_me import install
 
 if __name__ == '__main__':
-    sys.exit(
-        load_entry_point('sphinx-me==0.2.1', 'console_scripts', 'sphinx-me')()
-    )
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(install())

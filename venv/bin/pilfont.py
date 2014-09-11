@@ -1,4 +1,4 @@
-#!/home/s/py/django/kitty/venv/bin/python
+#!/home/t/py/django/kitty/venv/bin/python
 #
 # The Python Imaging Library
 # $Id$

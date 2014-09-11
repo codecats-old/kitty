@@ -1,4 +1,4 @@
-#!/home/s/py/django/kitty/venv/bin/python
+#!/home/t/py/django/kitty/venv/bin/python
 """PILdriver, an image-processing calculator using PIL.
 
 An instance of class PILDriver is essentially a software stack machine

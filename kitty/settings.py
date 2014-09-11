@@ -38,10 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'south',
     'easy_pdf',
     'frontsite',
     'chat',
-    'pdf'
+    'pdf',
 )
 
 MIDDLEWARE_CLASSES = (

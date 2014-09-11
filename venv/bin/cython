@@ -1,4 +1,4 @@
-#!/home/s/py/django/kitty/venv/bin/python
+#!/home/t/py/django/kitty/venv/bin/python
 # EASY-INSTALL-ENTRY-SCRIPT: 'Cython==0.20.1','console_scripts','cython'
 __requires__ = 'Cython==0.20.1'
 import sys
